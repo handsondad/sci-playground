@@ -136,7 +136,7 @@ export function MontyGame({ exit, sound, setSound }: GameProps) {
         emoji="🚪"
         title="三扇门 · 蒙提霍尔悖论"
         onBack={exit}
-        backLabel="数学馆"
+        backLabel="数学思维馆"
         stars={sumStars(starMap)}
         maxStars={9}
         settings={{ sound, setSound }}

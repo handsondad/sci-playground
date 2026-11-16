@@ -123,7 +123,7 @@ function LeverGame({ exit, sound, setSound }: GameProps) {
         emoji="⚖️"
         title="跷跷板平衡 · 杠杆与力矩"
         onBack={exit}
-        backLabel="物理馆"
+        backLabel="机械动力馆"
         stars={sumStars(starMap)}
         maxStars={leverLevels.length * 3}
         settings={{ sound, setSound }}
@@ -346,7 +346,7 @@ export const lever: GameModule = {
   meta: {
     id: "lever",
     title: "跷跷板平衡",
-    category: "physics",
+    category: "mechanics",
     emoji: "⚖️",
     tag: "杠杆与力矩",
     blurb: "在刻度木梁上挂小动物和砝码，用『重量×格数』让歪斜的跷跷板稳稳水平。",

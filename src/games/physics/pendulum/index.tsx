@@ -78,7 +78,7 @@ export function PendulumGame({ exit, sound, setSound }: GameProps) {
         emoji="🕰️"
         title="摆的秘密 · 伽利略单摆"
         onBack={exit}
-        backLabel="物理馆"
+        backLabel="声光电磁馆"
         stars={sumStars(starMap)}
         maxStars={swings.length * 3}
         settings={{ sound, setSound }}

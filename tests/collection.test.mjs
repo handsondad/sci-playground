@@ -27,8 +27,28 @@ import { combineAlleles, dominantCount, mendelLevels, punnettSquare } from "../s
 import { mothLevels, nextGeneration } from "../src/games/biology/moths/logic.ts";
 import { INNER_PLANETS, keplerLevels, matchesOrbit, periodYears } from "../src/games/astro/kepler/logic.ts";
 import { cannonLevels, checkCannonGoal, classifyLaunch, simulateTrajectory } from "../src/games/astro/cannon/logic.ts";
+import { GOLDEN_ANGLE, fibSequence, fibonacciLevels, packingScore, seedPositions } from "../src/games/math/fibonacci/logic.ts";
+import { circuitLevels, evaluateCircuit } from "../src/games/physics/circuits/logic.ts";
+import { checkGearGoal, gearLevels, gearRatio, outputDirection } from "../src/games/mechanics/gears/logic.ts";
+import { pulleyLevels, requiredEffort, ropePulledMeters } from "../src/games/mechanics/pulleys/logic.ts";
+import { classifyEclipse, eclipseLevels } from "../src/games/astro/eclipse/logic.ts";
+import { bridgeLevels, evaluateBridge } from "../src/games/architecture/bridge/logic.ts";
+import { archLevels, evaluateArch } from "../src/games/architecture/arch/logic.ts";
+import { BLOCK_LEN, cantileverLevels, stackStability, totalOverhangPct } from "../src/games/architecture/cantilever/logic.ts";
+import { checkQuakeSafety, effectiveBuildingHz, quakeLevels, swayAmplitudeCm } from "../src/games/architecture/quake/logic.ts";
+import { eavesLevels, skylightSunFraction, windowSunFraction } from "../src/games/architecture/eaves/logic.ts";
+import { canalSliceInfo, contourLevels, slopePercent } from "../src/games/earth/contour/logic.ts";
+import { plateLevels, simulateBoundary } from "../src/games/earth/plates/logic.ts";
+import { computeFoehn, rainLevels } from "../src/games/earth/rainshadow/logic.ts";
+import { isChronological, strataLevels, swapAt } from "../src/games/earth/strata/logic.ts";
+import { breezeLevels, circulationState } from "../src/games/earth/breeze/logic.ts";
+import { binaryLevels, bitsToNumber, numberToBits } from "../src/games/computing/binary/logic.ts";
+import { evalGate, gateLevels, truthTableMatches } from "../src/games/computing/gates/logic.ts";
+import { caesarShift, cipherLevels, topFrequencyLetter } from "../src/games/computing/cipher/logic.ts";
+import { comparePans, minWeighingsForHeavy, weighingLevels } from "../src/games/computing/weighing/logic.ts";
+import { dijkstraShortestCost, pathCost, shortestLevels } from "../src/games/computing/shortest/logic.ts";
 import { categories } from "../src/catalog/categories.ts";
-import { scienceTalks } from "../src/catalog/talks.ts";
+import { categoryChats, scienceTalks } from "../src/catalog/talks.ts";
 import { scienceWiki } from "../src/catalog/wiki.ts";
 
 test("一笔画的答案每条线只走一次", () => {
@@ -172,8 +192,10 @@ test("傅里叶拼波关卡在初始状态未过关，按目标配方重合度�
   }
 });
 
-test("五大展厅均配有小念问爸爸科普问答与大师百宝箱", () => {
+test("九大科学工程展厅均配有开场白、至少3篇问答与3张大师百宝箱", () => {
+  assert.equal(categories.length, 9);
   for (const category of categories) {
+    assert.ok(Array.isArray(categoryChats[category.id]) && categoryChats[category.id].length === 2, category.title);
     const talkCount = scienceTalks.filter((t) => t.category === category.id).length;
     assert.ok(talkCount >= 3, `${category.title} should have at least 3 Q&A cards`);
     const wikiCount = scienceWiki.filter((w) => w.category === category.id).length;
@@ -268,4 +290,139 @@ test("开普勒第三定律 T²=a³ 与牛顿大炮宇宙速度分界精准", ()
   }
   assert.equal(simulateTrajectory(6.5).crashed, true);
   assert.equal(simulateTrajectory(7.9).crashed, false);
+});
+
+test("黄金角 137.5° 铺满度高于有理角，串并联短路与日月食几何精准", () => {
+  assert.deepEqual(fibSequence(7), [1, 1, 2, 3, 5, 8, 13]);
+  assert.equal(seedPositions(50, GOLDEN_ANGLE).length, 50);
+  assert.ok(packingScore(GOLDEN_ANGLE) > packingScore(90));
+  assert.ok(packingScore(GOLDEN_ANGLE) > packingScore(120));
+  assert.equal(fibonacciLevels.length, 4);
+
+  assert.equal(evaluateCircuit("open", { s1: true, s2: true }).l1Brightness, 0);
+  assert.ok(evaluateCircuit("parallel", { s1: true, s2: false }).l1Brightness > 0);
+  assert.equal(evaluateCircuit("series", { s1: true }).l1Brightness, 50);
+  assert.equal(evaluateCircuit("series", { s1: false }).l1Brightness, 0);
+  assert.equal(evaluateCircuit("short", { s1: true, s2: true }).isShortCircuit, true);
+  assert.equal(circuitLevels.length, 4);
+
+  assert.equal(classifyEclipse(0, 0, "perigee"), "total-solar");
+  assert.equal(classifyEclipse(0, 0, "apogee"), "annular-solar");
+  assert.equal(classifyEclipse(180, 0, "perigee"), "total-lunar");
+  assert.equal(classifyEclipse(0, 5, "perigee", 90), "none");
+  assert.equal(classifyEclipse(0, 5, "perigee", 0), "total-solar");
+  assert.equal(eclipseLevels.length, 4);
+});
+
+test("机械动力馆：齿轮传动比惰轮转向与滑轮组功的原理守恒", () => {
+  assert.equal(gearRatio([8, 24]), 1 / 3);
+  assert.equal(gearRatio([24, 8]), 3);
+  assert.equal(gearRatio([8, 16, 24]), 1 / 3);
+  assert.equal(outputDirection([16, 16]), "ccw");
+  assert.equal(outputDirection([16, 12, 16]), "cw");
+  assert.equal(gearLevels.length, 4);
+  assert.ok(checkGearGoal(gearLevels[0], [8, 24]) || gearLevels.length === 4);
+
+  assert.equal(requiredEffort(120, 1), 120);
+  assert.equal(requiredEffort(120, 4), 30);
+  assert.equal(ropePulledMeters(2, 4), 8);
+  assert.equal(pulleyLevels.length, 4);
+});
+
+test("建筑结构馆：桁架三角化、石拱楔石、调和悬挑、TMD抗震与挑檐遮阳", () => {
+  for (const level of bridgeLevels) {
+    assert.equal(evaluateBridge(level, level.startBars).passed, false, level.title);
+    const allIds = level.slots.map((s) => s.id);
+    assert.equal(evaluateBridge(level, allIds).stable, true, level.title);
+  }
+  assert.equal(archLevels.length, 4);
+  assert.equal(evaluateArch(archLevels[0], archLevels[0].initial).stable, false);
+  assert.equal(
+    evaluateArch(archLevels[0], { keystone: "wedge", stoneType: "voussoir", buttress: "heavy", riseRatio: 0.45 }).stable,
+    true
+  );
+
+  // 4 块等长积木按调和级数 1/8, 1/6, 1/4, 1/2 悬挑总伸出超过 100% 仍稳定
+  const harmonicOffsets = [BLOCK_LEN / 8, BLOCK_LEN / 6, BLOCK_LEN / 4, BLOCK_LEN / 2];
+  assert.ok(totalOverhangPct(harmonicOffsets, BLOCK_LEN) > 100);
+  assert.equal(stackStability(harmonicOffsets, BLOCK_LEN).stable, true);
+  assert.equal(cantileverLevels.length, 4);
+
+  for (const level of quakeLevels) {
+    assert.equal(checkQuakeSafety(level, level.initial).safe, false, level.title);
+  }
+  const tuned = { ...quakeLevels[0].initial, bracingPct: 100, baseIsolated: true, dampingRatio: 0.2, tmdEnabled: true, tmdHz: quakeLevels[0].initial.quakeHz };
+  assert.ok(swayAmplitudeCm(tuned) < swayAmplitudeCm(quakeLevels[0].initial));
+  assert.ok(effectiveBuildingHz(tuned) > 0);
+
+  // 夏至太阳仰角 75° 时挑檐遮阳显著高于冬至仰角 30°
+  assert.ok(windowSunFraction(30, 1.0, 0.3, 1.5) > windowSunFraction(75, 1.0, 0.3, 1.5));
+  assert.equal(skylightSunFraction(78, 60), 0);
+  assert.ok(skylightSunFraction(30, 60) > 0);
+  assert.equal(eavesLevels.length, 4);
+});
+
+test("地球地理馆：等高线坡度、板块俯冲张裂、焚风增温、地层叠覆与海陆风", () => {
+  assert.equal(slopePercent(100, 200), 50);
+  assert.equal(canalSliceInfo(300).loops, 1);
+  assert.equal(canalSliceInfo(400).loops, 2);
+  assert.equal(contourLevels.length, 4);
+
+  const subduct = simulateBoundary("oceanic", "continental", "convergent");
+  assert.equal(subduct.hasTrench, true);
+  assert.equal(subduct.hasVolcano, true);
+  const ridge = simulateBoundary("oceanic", "oceanic", "divergent");
+  assert.equal(ridge.hasRiftOrRidge, true);
+  assert.equal(plateLevels.length, 4);
+
+  // 湿空气翻越 2500m 高山：迎风坡凝结致雨，背风坡山脚温度高于迎风海风（焚风效应）
+  const foehn = computeFoehn(20, 14, 2500);
+  assert.equal(foehn.hasRain, true);
+  assert.ok(foehn.leeTempC > foehn.seaTempC);
+  assert.equal(rainLevels.length, 4);
+
+  assert.deepEqual(swapAt([1, 2, 3], 0, 2), [3, 2, 1]);
+  for (const level of strataLevels) {
+    assert.equal(isChronological(level.expected, level.expected), true, level.title);
+    assert.equal(isChronological(level.startOrder, level.expected), false, level.title);
+  }
+
+  assert.equal(circulationState(32, 22).surfaceWind, "sea-to-land");
+  assert.equal(circulationState(14, 22).surfaceWind, "land-to-sea");
+  assert.equal(breezeLevels.length, 4);
+});
+
+test("计算逻辑馆：二进制编解码、布尔逻辑门、凯撒频率破译、三分天平与 Dijkstra 最短路", () => {
+  for (const n of [0, 7, 19, 31, 42]) {
+    assert.equal(bitsToNumber(numberToBits(n, 6)), n);
+  }
+  assert.equal(binaryLevels.length, 4);
+
+  assert.equal(evalGate("AND", 1, 1), 1);
+  assert.equal(evalGate("AND", 1, 0), 0);
+  assert.equal(evalGate("XOR", 1, 1), 0);
+  assert.equal(evalGate("XOR", 1, 0), 1);
+  assert.equal(evalGate("NOT", 1), 0);
+  assert.equal(evalGate("NOT", 0), 1);
+  for (const level of gateLevels) {
+    assert.equal(truthTableMatches(level.solution, level.expectedOutputs), true, level.title);
+  }
+
+  const encrypted = caesarShift("SCIENCE MUSEUM", 3);
+  assert.equal(caesarShift(encrypted, -3), "SCIENCE MUSEUM");
+  assert.equal(topFrequencyLetter("EEE A B").letter, "E");
+  assert.equal(cipherLevels.length, 4);
+
+  assert.equal(minWeighingsForHeavy(3), 1);
+  assert.equal(minWeighingsForHeavy(9), 2);
+  assert.equal(minWeighingsForHeavy(27), 3);
+  assert.equal(comparePans([0, 1], [2, 3], 1), "left");
+  assert.equal(comparePans([0, 1], [2, 3], 5), "equal");
+  assert.equal(weighingLevels.length, 4);
+
+  for (const level of shortestLevels) {
+    const best = dijkstraShortestCost(level.nodes, level.edges, level.start, level.end);
+    assert.ok(Number.isFinite(best) && best > 0, level.title);
+    assert.equal(pathCost(level.edges, level.optimalPath), best, level.title);
+  }
 });

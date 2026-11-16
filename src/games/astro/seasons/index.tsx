@@ -75,7 +75,7 @@ export function SeasonsGame({ exit, sound, setSound }: GameProps) {
         emoji="🌍"
         title="谁在过夏天 · 地轴倾角与四季"
         onBack={exit}
-        backLabel="天文馆"
+        backLabel="天文宇宙馆"
         stars={sumStars(starMap)}
         maxStars={orbits.length * 3}
         settings={{ sound, setSound }}

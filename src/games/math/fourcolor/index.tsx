@@ -74,7 +74,7 @@ function FourColorGame({ exit, sound, setSound }: GameProps) {
         emoji="🗺️"
         title="四色地图 · 四色定理"
         onBack={exit}
-        backLabel="数学馆"
+        backLabel="数学思维馆"
         stars={sumStars(starMap)}
         maxStars={mapLevels.length * 3}
         settings={{ sound, setSound }}

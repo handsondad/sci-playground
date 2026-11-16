@@ -66,7 +66,7 @@ export function OsmosisGame({ exit, sound, setSound }: GameProps) {
         emoji="🥚"
         title="裸蛋喝水 · 细胞膜渗透"
         onBack={exit}
-        backLabel="生物馆"
+        backLabel="生命科学馆"
         stars={sumStars(starMap)}
         maxStars={cells.length * 3}
         settings={{ sound, setSound }}

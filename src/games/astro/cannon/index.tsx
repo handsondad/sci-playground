@@ -99,7 +99,7 @@ function CannonGame({ exit, sound, setSound }: GameProps) {
         emoji="🚀"
         title="牛顿大炮 · 宇宙速度与入轨"
         onBack={exit}
-        backLabel="天文馆"
+        backLabel="天文宇宙馆"
         stars={sumStars(starMap)}
         maxStars={cannonLevels.length * 3}
         settings={{ sound, setSound }}

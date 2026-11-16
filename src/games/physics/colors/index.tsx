@@ -58,7 +58,7 @@ function ColorsGame({ exit, sound, setSound }: GameProps) {
         emoji="🌈"
         title="三原色舞台灯 · 色光混合"
         onBack={exit}
-        backLabel="物理馆"
+        backLabel="声光电磁馆"
         stars={sumStars(starMap)}
         maxStars={colorLevels.length * 3}
         settings={{ sound, setSound }}

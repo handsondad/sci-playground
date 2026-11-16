@@ -63,7 +63,7 @@ export function FizzGame({ exit, sound, setSound }: GameProps) {
         emoji="🎈"
         title="小苏打气球 · 限量反应物"
         onBack={exit}
-        backLabel="化学馆"
+        backLabel="化学分子馆"
         stars={sumStars(starMap)}
         maxStars={balloons.length * 3}
         settings={{ sound, setSound }}

@@ -1,7 +1,16 @@
 import type { ComponentType } from "react";
 
 /** 新门类加在 categories.ts，新游戏加在 games.ts。 */
-export type CategoryId = "math" | "physics" | "chemistry" | "biology" | "astro";
+export type CategoryId =
+  | "math"
+  | "physics"
+  | "mechanics"
+  | "architecture"
+  | "chemistry"
+  | "biology"
+  | "earth"
+  | "astro"
+  | "computing";
 
 export type Category = {
   id: CategoryId;

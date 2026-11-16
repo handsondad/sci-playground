@@ -90,7 +90,7 @@ export function TossGame({ exit, sound, setSound }: GameProps) {
         emoji="🎾"
         title="扔得最远 · 抛物线射程"
         onBack={exit}
-        backLabel="物理馆"
+        backLabel="机械动力馆"
         stars={sumStars(starMap)}
         maxStars={shots.length * 3}
         settings={{ sound, setSound }}
@@ -245,7 +245,7 @@ export function TossGame({ exit, sound, setSound }: GameProps) {
 export const toss = {
   meta: {
     id: "toss",
-    category: "physics" as const,
+    category: "mechanics" as const,
     title: "扔得最远",
     emoji: "🎾",
     blurb: "调仰角、拉抛物线！找准 45° 最远黄金角，再发现 30° 与 60° 同落点的秘密。",

@@ -75,7 +75,7 @@ function MendelGame({ exit, sound, setSound }: GameProps) {
         emoji="🫛"
         title="孟德尔种豌豆 · 遗传棋盘格"
         onBack={exit}
-        backLabel="生物馆"
+        backLabel="生命科学馆"
         stars={sumStars(starMap)}
         maxStars={mendelLevels.length * 3}
         settings={{ sound, setSound }}

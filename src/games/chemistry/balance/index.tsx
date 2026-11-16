@@ -107,7 +107,7 @@ export function BalanceGame({ exit, sound, setSound }: GameProps) {
         emoji="⚖️"
         title="配平方程式 · 质量守恒"
         onBack={exit}
-        backLabel="化学馆"
+        backLabel="化学分子馆"
         stars={sumStars(starMap)}
         maxStars={reactions.length * 3}
         settings={{ sound, setSound }}

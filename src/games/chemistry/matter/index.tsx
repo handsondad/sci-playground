@@ -138,7 +138,7 @@ function MatterGame({ exit, sound, setSound }: GameProps) {
         emoji="🧊"
         title="三态微观镜 · 物态变化与分子"
         onBack={exit}
-        backLabel="化学馆"
+        backLabel="化学分子馆"
         stars={sumStars(starMap)}
         maxStars={matterLevels.length * 3}
         settings={{ sound, setSound }}

@@ -101,7 +101,7 @@ export function WavesGame({ exit, sound, setSound }: GameProps) {
         emoji="🌊"
         title="拼波实验室 · 泛音与傅里叶"
         onBack={exit}
-        backLabel="物理馆"
+        backLabel="声光电磁馆"
         stars={sumStars(starMap)}
         maxStars={waveLevels.length * 3}
         settings={{ sound, setSound }}

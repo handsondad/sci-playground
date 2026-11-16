@@ -75,7 +75,7 @@ function MothsGame({ exit, sound, setSound }: GameProps) {
         emoji="🦋"
         title="桦尺蠖捉迷藏 · 自然选择"
         onBack={exit}
-        backLabel="生物馆"
+        backLabel="生命科学馆"
         stars={sumStars(starMap)}
         maxStars={mothLevels.length * 3}
         settings={{ sound, setSound }}

@@ -36,7 +36,7 @@ export function HomePage({ stars, quiz, settings, onGo, onExit }: {
         emoji="🛝"
         title="最快的滑梯 · 最速降线"
         onBack={onExit}
-        backLabel="物理馆"
+        backLabel="机械动力馆"
         stars={levelTotal + quiz}
         maxStars={maxTotal}
         settings={settings}

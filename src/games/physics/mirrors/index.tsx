@@ -89,7 +89,7 @@ export function MirrorsGame({ exit, sound, setSound }: GameProps) {
         emoji="🔦"
         title="镜子迷宫 · 光的反射"
         onBack={exit}
-        backLabel="物理馆"
+        backLabel="声光电磁馆"
         stars={sumStars(starMap)}
         maxStars={mirrorLevels.length * 3}
         settings={{ sound, setSound }}

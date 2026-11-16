@@ -91,7 +91,7 @@ export function ChainGame({ exit, sound, setSound }: GameProps) {
         emoji="🦊"
         title="谁吃谁 · 食物链能量传递"
         onBack={exit}
-        backLabel="生物馆"
+        backLabel="生命科学馆"
         stars={sumStars(starMap)}
         maxStars={chains.length * 3}
         settings={{ sound, setSound }}

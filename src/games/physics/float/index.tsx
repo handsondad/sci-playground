@@ -60,7 +60,7 @@ export function FloatGame({ exit, sound, setSound }: GameProps) {
         emoji="🥚"
         title="浮起来的鸡蛋 · 浮力与密度"
         onBack={exit}
-        backLabel="物理馆"
+        backLabel="声光电磁馆"
         stars={sumStars(starMap)}
         maxStars={floatLevels.length * 3}
         settings={{ sound, setSound }}

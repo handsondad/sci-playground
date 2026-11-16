@@ -85,7 +85,7 @@ function FlameGame({ exit, sound, setSound }: GameProps) {
         emoji="🎆"
         title="焰色烟花秀 · 金属焰色反应"
         onBack={exit}
-        backLabel="化学馆"
+        backLabel="化学分子馆"
         stars={sumStars(starMap)}
         maxStars={flameLevels.length * 3}
         settings={{ sound, setSound }}

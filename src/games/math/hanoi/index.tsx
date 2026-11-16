@@ -89,7 +89,7 @@ export function HanoiGame({ exit, sound, setSound }: GameProps) {
         emoji="🗼"
         title="汉诺塔 · 递归搬盘"
         onBack={exit}
-        backLabel="数学馆"
+        backLabel="数学思维馆"
         stars={sumStars(starMap)}
         maxStars={SIZES.length * 3}
         settings={{ sound, setSound }}

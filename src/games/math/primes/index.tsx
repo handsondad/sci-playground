@@ -96,7 +96,7 @@ function PrimesGame({ exit, sound, setSound }: GameProps) {
         emoji="🔢"
         title="筛质数寻宝 · 埃氏筛法"
         onBack={exit}
-        backLabel="数学馆"
+        backLabel="数学思维馆"
         stars={sumStars(starMap)}
         maxStars={primeLevels.length * 3}
         settings={{ sound, setSound }}

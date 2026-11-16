@@ -81,7 +81,7 @@ export function MoonGame({ exit, sound, setSound }: GameProps) {
         emoji="🌙"
         title="月相 · 阴晴圆缺之谜"
         onBack={exit}
-        backLabel="天文馆"
+        backLabel="天文宇宙馆"
         stars={sumStars(starMap)}
         maxStars={phases.length * 3}
         settings={{ sound, setSound }}

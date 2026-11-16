@@ -104,7 +104,7 @@ export function EulerGame({ exit, sound, setSound }: GameProps) {
         emoji="✏️"
         title="一笔画 · 欧拉路径"
         onBack={exit}
-        backLabel="数学馆"
+        backLabel="数学思维馆"
         stars={sumStars(starMap)}
         maxStars={boards.length * 3}
         settings={{ sound, setSound }}

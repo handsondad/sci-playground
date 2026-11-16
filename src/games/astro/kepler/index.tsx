@@ -90,7 +90,7 @@ function KeplerGame({ exit, sound, setSound }: GameProps) {
         emoji="🪐"
         title="行星赛跑 · 开普勒第三定律"
         onBack={exit}
-        backLabel="天文馆"
+        backLabel="天文宇宙馆"
         stars={sumStars(starMap)}
         maxStars={keplerLevels.length * 3}
         settings={{ sound, setSound }}

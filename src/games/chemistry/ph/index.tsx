@@ -69,7 +69,7 @@ export function PhGame({ exit, sound, setSound }: GameProps) {
         emoji="🧪"
         title="调酸碱 · 彩虹指示剂"
         onBack={exit}
-        backLabel="化学馆"
+        backLabel="化学分子馆"
         stars={sumStars(starMap)}
         maxStars={cups.length * 3}
         settings={{ sound, setSound }}

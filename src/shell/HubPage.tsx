@@ -24,7 +24,7 @@ export function HubPage({ settings }: { settings: Settings }) {
     <div className="page home">
       <header className="home-title">
         <h1><span aria-hidden="true">🔬</span> 科学小游戏大冒险</h1>
-        <p>小念和爸爸的动手科学馆：五扇好奇的门，把数学、物理、化学、生物和星空玩明白</p>
+        <p>小念和爸爸的动手科学馆：九大科学工程展厅，把数学、声光电磁、机械、建筑、化学、生命、地理、天文与计算逻辑玩明白</p>
       </header>
 
       <div className="hub-progress">
@@ -51,10 +51,10 @@ export function HubPage({ settings }: { settings: Settings }) {
 
       <section aria-labelledby="hub-halls-title">
         <div className="section-head">
-          <h2 id="hub-halls-title" className="section-title">五大科学展厅</h2>
-          <span className="section-sub">推开一扇门，听小念和爸爸聊这门学科的奇妙脾气</span>
+          <h2 id="hub-halls-title" className="section-title">九大科学工程展厅</h2>
+          <span className="section-sub">推开任意一扇门，听小念和爸爸聊这门学科的奇妙脾气</span>
         </div>
-        <div className="modes is-five">
+        <div className="modes">
           {categories.map((category) => {
             const list = gamesIn(category.id);
             const hallMax = list.reduce((acc, g) => acc + g.meta.maxStars, 0);
@@ -118,7 +118,7 @@ export function HubPage({ settings }: { settings: Settings }) {
           })}
         </div>
 
-        <div className="modes">
+        <div className={`modes${shownGames.length === 5 ? " is-five" : ""}`}>
           {shownGames.map((game) => {
             const earned = Math.min(game.meta.maxStars, sumStars(book[game.meta.id]));
             const accent = colorByCat[game.meta.category] ?? "#ff9f43";

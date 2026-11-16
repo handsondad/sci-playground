@@ -86,7 +86,7 @@ export function PairsGame({ exit, sound, setSound }: GameProps) {
         emoji="🧬"
         title="碱基配对 · DNA 双螺旋密码"
         onBack={exit}
-        backLabel="生物馆"
+        backLabel="生命科学馆"
         stars={sumStars(starMap)}
         maxStars={strands.length * 3}
         settings={{ sound, setSound }}
