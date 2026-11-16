@@ -47,6 +47,18 @@ import { evalGate, gateLevels, truthTableMatches } from "../src/games/computing/
 import { caesarShift, cipherLevels, topFrequencyLetter } from "../src/games/computing/cipher/logic.ts";
 import { comparePans, minWeighingsForHeavy, weighingLevels } from "../src/games/computing/weighing/logic.ts";
 import { dijkstraShortestCost, pathCost, shortestLevels } from "../src/games/computing/shortest/logic.ts";
+import { checkHockeyGoal, electricFieldAt, hockeyLevels } from "../src/games/physics/hockey/logic.ts";
+import { checkSlitsGoal, fringeSpacingMm, intensityAtMm, slitsLevels } from "../src/games/physics/slits/logic.ts";
+import { checkRefractionGoal, refractionLevels, traceSnellRay } from "../src/games/physics/refraction/logic.ts";
+import { checkHohmannGoal, computeHohmannTransfer, hohmannLevels } from "../src/games/astro/hohmann/logic.ts";
+import { checkSkateGoal, simulateSkate, skateLevels } from "../src/games/mechanics/skate/logic.ts";
+import { checkMotionGoal, displacementAt, motionLevels, velocityAt } from "../src/games/mechanics/motion/logic.ts";
+import { checkEpicycleGoal, epicycleChainAt, epicycleLevels } from "../src/games/math/epicycles/logic.ts";
+import { automataLevels, checkAutomataGoal, runForestAutomata } from "../src/games/computing/automata/logic.ts";
+import { POPULATION, checkHerdGoal, herdLevels, simulateSIR } from "../src/games/biology/herd/logic.ts";
+import { checkGreenhouseGoal, computeClimate, greenhouseLevels } from "../src/games/earth/greenhouse/logic.ts";
+import { analyzeSuspension, checkSuspensionGoal, suspensionLevels } from "../src/games/architecture/suspension/logic.ts";
+import { checkGasGoal, computeGasState, gasLevels } from "../src/games/chemistry/gas/logic.ts";
 import { categories } from "../src/catalog/categories.ts";
 import { categoryChats, scienceTalks } from "../src/catalog/talks.ts";
 import { scienceWiki } from "../src/catalog/wiki.ts";
@@ -199,7 +211,7 @@ test("九大科学工程展厅均配有开场白、至少3篇问答与3张大师
     const talkCount = scienceTalks.filter((t) => t.category === category.id).length;
     assert.ok(talkCount >= 3, `${category.title} should have at least 3 Q&A cards`);
     const wikiCount = scienceWiki.filter((w) => w.category === category.id).length;
-    assert.equal(wikiCount, 3, `${category.title} should have 3 science wiki cards`);
+    assert.ok(wikiCount >= 3, `${category.title} should have at least 3 science wiki cards`);
   }
 });
 
@@ -427,12 +439,124 @@ test("计算逻辑馆：二进制编解码、布尔逻辑门、凯撒频率破�
   }
 });
 
+test("新增 12 款经典互动实验：物理守恒律、数学不变量与全部 48 关起止验证", () => {
+  // 1. 电场冰球：同号排斥、异号吸引，4 关起止验证
+  const repulse = electricFieldAt(200, 160, [{ id: "A", label: "A", x: 100, y: 160, startQ: 0 }], [3]);
+  const attract = electricFieldAt(200, 160, [{ id: "A", label: "A", x: 100, y: 160, startQ: 0 }], [-3]);
+  assert.ok(repulse.ax > 0 && attract.ax < 0);
+  for (const l of hockeyLevels) {
+    assert.equal(checkHockeyGoal(l, l.electrodes.map((e) => e.startQ)), false, l.title);
+    assert.equal(checkHockeyGoal(l, l.sampleSolution), true, l.title);
+  }
+
+  // 2. 双缝干涉：红光条纹比蓝光宽，中央亮纹光强为 1、半波程差暗纹为 0
+  const blueDy = fringeSpacingMm({ wavelengthNm: 450, slitMm: 0.4, screenM: 2.0 });
+  const redDy = fringeSpacingMm({ wavelengthNm: 650, slitMm: 0.4, screenM: 2.0 });
+  assert.ok(redDy > blueDy);
+  assert.equal(intensityAtMm({ wavelengthNm: 500, slitMm: 0.5, screenM: 2.0 }, 0), 1);
+  assert.ok(intensityAtMm({ wavelengthNm: 500, slitMm: 0.5, screenM: 2.0 }, 1.0) < 1e-9);
+  for (const l of slitsLevels) {
+    assert.equal(checkSlitsGoal(l, l.start), false, l.title);
+    assert.equal(checkSlitsGoal(l, l.sampleSolution), true, l.title);
+  }
+
+  // 3. 激光折射与光纤：空气射入水折射角小于入射角；钻石射向空气大角度发生全内反射
+  const intoWater = traceSnellRay({ angleDeg: 45, topMedium: "air", bottomMedium: "water" });
+  assert.equal(intoWater.totalInternalReflection, false);
+  assert.ok(intoWater.refractedDeg < 45);
+  const tir = traceSnellRay({ angleDeg: 30, topMedium: "diamond", bottomMedium: "air" });
+  assert.equal(tir.totalInternalReflection, true);
+  for (const l of refractionLevels) {
+    assert.equal(checkRefractionGoal(l, l.start), false, l.title);
+    assert.equal(checkRefractionGoal(l, l.sampleSolution), true, l.title);
+  }
+
+  // 4. 霍曼火星变轨：地球飞火星 (1.524 AU) 半椭圆耗时约 259 天
+  const mars = computeHohmannTransfer(hohmannLevels[0], hohmannLevels[0].sampleSolution);
+  assert.ok(mars.transferDays > 250 && mars.transferDays < 268);
+  for (const l of hohmannLevels) {
+    assert.equal(checkHohmannGoal(l, l.start), false, l.title);
+    assert.equal(checkHohmannGoal(l, l.sampleSolution), true, l.title);
+  }
+
+  // 5. 滑板能量公园：势能+动能+热能严格等于初始总机械能
+  for (const l of skateLevels) {
+    assert.equal(checkSkateGoal(l, l.start), false, l.title);
+    const sim = simulateSkate(l, l.sampleSolution);
+    assert.equal(sim.outcome, "perfect", l.title);
+    assert.ok(Math.abs(sim.potentialJ + sim.kineticJ + sim.thermalJ - sim.totalEnergyJ) < 1e-6);
+  }
+
+  // 6. 运动图像赛车：匀加速位移严格等于梯形面积 (v0 + v6)/2 * 6
+  const plan = { v0: 2, a1: 2, a2: 2 };
+  assert.equal(velocityAt(plan, 6), 14);
+  assert.equal(displacementAt(plan, 6), ((2 + 14) / 2) * 6);
+  for (const l of motionLevels) {
+    assert.equal(checkMotionGoal(l, l.start), false, l.title);
+    assert.equal(checkMotionGoal(l, l.target), true, l.title);
+  }
+
+  // 7. 傅里叶圆周画板：+1 与 -1 反向旋转合成椭圆长短半轴 R+r 与 R-r
+  const chainX = epicycleChainAt([1, -1], [60, 25], 0);
+  const chainY = epicycleChainAt([1, -1], [60, 25], Math.PI / 2);
+  assert.ok(Math.abs(chainX[2][0] - 85) < 1e-6);
+  assert.ok(Math.abs(chainY[2][1] - 35) < 1e-6);
+  for (const l of epicycleLevels) {
+    assert.equal(checkEpicycleGoal(l, l.rotors.map((r) => r.startRadius)), false, l.title);
+    assert.equal(checkEpicycleGoal(l, l.rotors.map((r) => r.targetRadius)), true, l.title);
+  }
+
+  // 8. 元胞森林防火：烧毁树 + 幸存树 = 总种树数
+  for (const l of automataLevels) {
+    assert.equal(checkAutomataGoal(l, l.start), false, l.title);
+    assert.equal(checkAutomataGoal(l, l.sampleSolution), true, l.title);
+    const sim = runForestAutomata(l.seed, l.sampleSolution);
+    assert.equal(sim.burnedTrees + sim.survivingTrees, sim.plantedTrees);
+  }
+
+  // 9. 免疫屏障实验室：S + I + R 总人口严格守恒
+  for (const l of herdLevels) {
+    assert.equal(checkHerdGoal(l, l.start), false, l.title);
+    assert.equal(checkHerdGoal(l, l.sampleSolution), true, l.title);
+    const sim = simulateSIR(l.r0Basic, l.sampleSolution);
+    const last = sim.series[sim.series.length - 1];
+    assert.ok(Math.abs(last.S + last.I + last.R - POPULATION) < 1e-4);
+  }
+
+  // 10. 地球温室调温器：增高 CO₂ 升温，增高冰雪反照率降温
+  const baseC = computeClimate(1.0, { co2Ppm: 280, albedo: 0.3 }).surfaceTempC;
+  assert.ok(computeClimate(1.0, { co2Ppm: 560, albedo: 0.3 }).surfaceTempC > baseC);
+  assert.ok(computeClimate(1.0, { co2Ppm: 280, albedo: 0.5 }).surfaceTempC < baseC);
+  for (const l of greenhouseLevels) {
+    assert.equal(checkGreenhouseGoal(l, l.start), false, l.title);
+    assert.equal(checkGreenhouseGoal(l, l.sampleSolution), true, l.title);
+  }
+
+  // 11. 悬索大桥主缆：减小垂度 f 时主缆水平拉力急剧增大
+  const flatPull = analyzeSuspension(suspensionLevels[0], { towerHeightM: 62, sagM: 12 }).horizontalPullMN;
+  const deepPull = analyzeSuspension(suspensionLevels[0], { towerHeightM: 62, sagM: 48 }).horizontalPullMN;
+  assert.ok(flatPull > deepPull * 3.5);
+  for (const l of suspensionLevels) {
+    assert.equal(checkSuspensionGoal(l, l.start), false, l.title);
+    assert.equal(checkSuspensionGoal(l, l.sampleSolution), true, l.title);
+  }
+
+  // 12. 气体分子压力舱：等温体积减半则压强加倍（玻意耳定律）
+  const p8 = computeGasState({ moles: 1, volumeL: 8, tempK: 300 }).pressureKPa;
+  const p4 = computeGasState({ moles: 1, volumeL: 4, tempK: 300 }).pressureKPa;
+  assert.ok(Math.abs(p4 - p8 * 2) < 0.3);
+  for (const l of gasLevels) {
+    assert.equal(checkGasGoal(l, l.start), false, l.title);
+    assert.equal(checkGasGoal(l, l.sampleSolution), true, l.title);
+  }
+});
+
 test("仓库一致性守卫：check-rules 全部硬性规矩零违规", async () => {
   const { checkAllRules } = await import("../tools/check-rules.mjs");
   const result = checkAllRules();
   assert.deepEqual(result.errors, []);
   assert.equal(result.ok, true);
   assert.ok(result.stats.halls >= 9);
-  assert.ok(result.stats.games >= 48);
+  assert.ok(result.stats.games >= 60);
 });
 

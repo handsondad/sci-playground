@@ -10,12 +10,20 @@ export default defineConfig({
       output: {
         manualChunks(id) {
           if (id.includes("node_modules")) return "vendor";
-          if (id.includes("/games/architecture/") || id.includes("\\games\\architecture\\") ||
-              id.includes("/games/earth/") || id.includes("\\games\\earth\\") ||
-              id.includes("/games/computing/") || id.includes("\\games\\computing\\")) {
-            return "halls-new";
+          const norm = id.replace(/\\/g, "/");
+          if (norm.includes("/games/physics/") || norm.includes("/games/math/")) {
+            return "halls-phys-math";
           }
-          if (id.includes("/games/")) return "halls-core";
+          if (
+            norm.includes("/games/mechanics/") ||
+            norm.includes("/games/architecture/") ||
+            norm.includes("/games/computing/")
+          ) {
+            return "halls-mech-arch-comp";
+          }
+          if (norm.includes("/games/")) {
+            return "halls-chem-bio-earth-astro";
+          }
         }
       }
     }
