@@ -426,3 +426,13 @@ test("计算逻辑馆：二进制编解码、布尔逻辑门、凯撒频率破�
     assert.equal(pathCost(level.edges, level.optimalPath), best, level.title);
   }
 });
+
+test("仓库一致性守卫：check-rules 全部硬性规矩零违规", async () => {
+  const { checkAllRules } = await import("../tools/check-rules.mjs");
+  const result = checkAllRules();
+  assert.deepEqual(result.errors, []);
+  assert.equal(result.ok, true);
+  assert.ok(result.stats.halls >= 9);
+  assert.ok(result.stats.games >= 48);
+});
+
