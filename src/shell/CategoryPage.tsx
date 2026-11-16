@@ -34,9 +34,33 @@ export function CategoryPage({ category, games, settings }: {
         settings={settings}
       />
 
-      {intro && <Chat lines={pairLines(intro)} />}
+      {intro && <Chat lines={pairLines(intro)} playLabel="听小念和爸爸导览" />}
 
-      <h2 className="section-title">玩一玩 · 本馆实验 ({games.length})</h2>
+      <nav className="hall-anchors" aria-label="展厅分区跳转">
+        <button
+          type="button"
+          className="pill-btn"
+          onClick={() => document.getElementById("hall-games")?.scrollIntoView({ behavior: "smooth" })}
+        >
+          🎮 动手实验 ({games.length})
+        </button>
+        <button
+          type="button"
+          className="pill-btn"
+          onClick={() => document.getElementById("hall-wiki")?.scrollIntoView({ behavior: "smooth" })}
+        >
+          📚 大师与居家实验 ({scienceWiki.filter((w) => w.category === category.id).length})
+        </button>
+        <button
+          type="button"
+          className="pill-btn"
+          onClick={() => document.getElementById("hall-talks")?.scrollIntoView({ behavior: "smooth" })}
+        >
+          💬 小念问爸爸 ({hallTalks.length})
+        </button>
+      </nav>
+
+      <h2 id="hall-games" className="section-title">玩一玩 · 本馆实验 ({games.length})</h2>
       <div className={`modes${games.length === 4 ? " is-four" : games.length === 5 ? " is-five" : ""}`}>
         {games.map((game) => {
           const earned = Math.min(game.meta.maxStars, sumStars(book[game.meta.id]));
@@ -65,14 +89,18 @@ export function CategoryPage({ category, games, settings }: {
 
       {games.length === 0 && <p className="banner">这扇门还没有游戏。在 catalog/games.ts 里登记一个，它就会出现在这里。</p>}
 
-      <WikiSection
-        items={scienceWiki.filter((w) => w.category === category.id)}
-        colorsByCategory={{ [category.id]: category.color }}
-        title={`📚 大师故事与家庭小实验 · ${category.title}`}
-        subtitle="听爸爸讲科学发现背后的趣事，在家用身边材料就能复现"
-      />
+      <div id="hall-wiki">
+        <WikiSection
+          items={scienceWiki.filter((w) => w.category === category.id)}
+          colorsByCategory={{ [category.id]: category.color }}
+          title={`📚 大师故事与家庭小实验 · ${category.title}`}
+          subtitle="听爸爸讲科学发现背后的趣事，在家用身边材料就能复现"
+        />
+      </div>
 
-      <TalksSection talks={hallTalks} title={`小念问爸爸 · ${category.title}`} />
+      <div id="hall-talks">
+        <TalksSection talks={hallTalks} title={`小念问爸爸 · ${category.title}`} />
+      </div>
     </div>
   );
 }

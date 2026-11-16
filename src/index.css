@@ -178,6 +178,135 @@ p { margin: 0.4rem 0; }
 .hub-progress-info strong { font-size: 1.12rem; color: #c25e00; }
 .hub-progress .meter { flex: 1; min-width: 220px; }
 
+/* Hub Finder (Search + Random Game) */
+.hub-finder {
+  margin: 18px 0 4px;
+}
+.hub-finder-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+  border: 2.5px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+}
+.hub-search {
+  flex: 1 1 260px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: #fffaf4;
+  border: 2px solid #ffe4cc;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.hub-search:focus-within {
+  border-color: var(--accent-orange);
+  box-shadow: 0 0 0 3px rgba(255, 159, 67, 0.2);
+}
+.hub-search-icon {
+  font-size: 1.05rem;
+  flex: none;
+}
+.hub-search input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  outline: none;
+  font-size: 0.98rem;
+}
+.hub-search input::-webkit-search-cancel-button {
+  display: none;
+}
+.hub-search-clear {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border-radius: 50%;
+  border: 0;
+  background: #ffe8d2;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+}
+.hub-random-btn {
+  padding: 9px 18px;
+  font-size: 0.98rem;
+  white-space: nowrap;
+}
+.hub-search-results {
+  margin-top: 14px;
+  padding: 16px 18px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(180deg, #fffdf9, #ffffff);
+  border: 2.5px dashed #ffc98b;
+  animation: pop 0.28s both;
+}
+.hub-results-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+  margin-bottom: 12px;
+}
+.hub-results-head strong {
+  color: #b85600;
+  font-size: 0.98rem;
+}
+.hub-quick-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.hub-kw-chip {
+  padding: 4px 12px;
+  font-size: 0.85rem;
+}
+.hub-results-grid {
+  margin-bottom: 8px;
+}
+
+/* Enriched 9-Hall Cards & Hall Quick Anchors */
+.hall-card {
+  grid-template-rows: auto auto auto 1fr auto;
+}
+.hall-card .mode-emoji {
+  grid-row: 1 / 6;
+}
+.hall-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin: 2px 0 4px;
+}
+.hall-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  background: color-mix(in srgb, var(--bubble, #ff9f43) 12%, #fffdf9);
+  border: 1px solid color-mix(in srgb, var(--bubble, #ff9f43) 32%, white);
+}
+.hall-anchors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0 6px;
+}
+
 /* Duo Hero Stage (fourier-puzzle-game style) */
 .duo {
   position: relative; height: 300px; border-radius: var(--radius-lg); overflow: hidden;

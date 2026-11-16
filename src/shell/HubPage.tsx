@@ -1,4 +1,4 @@
-import { useState, type CSSProperties } from "react";
+import { useMemo, useState, type CSSProperties } from "react";
 import { categories } from "../catalog/categories.ts";
 import { games, gamesIn } from "../catalog/games.ts";
 import { hubChats, scienceTalks } from "../catalog/talks.ts";
@@ -6,25 +6,76 @@ import { scienceWiki } from "../catalog/wiki.ts";
 import type { CategoryId } from "../catalog/types.ts";
 import type { Settings } from "../kit/Chrome.tsx";
 import { DuoStage, Meter, TalksSection, WikiSection } from "../kit/GameKit.tsx";
-import { sumStars, useStarBook } from "../kit/progress.ts";
+import { sumStars, useStarBook, type StarBook } from "../kit/progress.ts";
 import { stopSpeaking } from "../kit/speech.ts";
 
+const QUICK_KEYWORDS = ["齿轮", "造桥", "彩虹", "恐龙", "密码", "日食"];
+
+/** 优先抽还没拿过星的实验，其次没拿满三星的实验，全都满星则随机抽一个。 */
+function pickRandomGameId(book: StarBook): string {
+  const unplayed = games.filter((g) => sumStars(book[g.meta.id]) === 0);
+  if (unplayed.length > 0) {
+    return unplayed[Math.floor(Math.random() * unplayed.length)].meta.id;
+  }
+  const unfinished = games.filter((g) => sumStars(book[g.meta.id]) < g.meta.maxStars);
+  const pool = unfinished.length > 0 ? unfinished : games;
+  return pool[Math.floor(Math.random() * pool.length)].meta.id;
+}
+
 export function HubPage({ settings }: { settings: Settings }) {
-  const [filter, setFilter] = useState<"all" | CategoryId>("all");
+  const [query, setQuery] = useState("");
   const book = useStarBook();
 
   const grandMax = games.reduce((acc, g) => acc + g.meta.maxStars, 0);
   const grandEarned = games.reduce((acc, g) => acc + Math.min(g.meta.maxStars, sumStars(book[g.meta.id])), 0);
   const pct = grandMax > 0 ? Math.round((grandEarned / grandMax) * 100) : 0;
 
-  const shownGames = filter === "all" ? games : gamesIn(filter);
-  const colorByCat = Object.fromEntries(categories.map((c) => [c.id, c.color])) as Record<CategoryId, string>;
+  const colorByCat = useMemo(
+    () => Object.fromEntries(categories.map((c) => [c.id, c.color])) as Record<CategoryId, string>,
+    []
+  );
+  const catById = useMemo(
+    () => Object.fromEntries(categories.map((c) => [c.id, c])) as Record<CategoryId, (typeof categories)[number]>,
+    []
+  );
+
+  const trimmed = query.trim().toLowerCase();
+  const searchResults = useMemo(() => {
+    if (!trimmed) return null;
+    const hit = (s: string) => s.toLowerCase().includes(trimmed);
+    const matchedGames = games.filter((g) => {
+      const cat = catById[g.meta.category];
+      return hit(g.meta.title) || hit(g.meta.tag) || hit(g.meta.blurb) || (cat && hit(cat.title));
+    });
+    const matchedWiki = scienceWiki.filter(
+      (w) => hit(w.title) || hit(w.scientist) || hit(w.story) || hit(w.homeLab) || hit(w.relatedGameTitle)
+    );
+    const matchedTalks = scienceTalks.filter(
+      (t) => hit(t.title) || hit(t.wrap) || t.turns.some((turn) => hit(turn.nian) || hit(turn.dad))
+    );
+    return {
+      games: matchedGames,
+      wiki: matchedWiki,
+      talks: matchedTalks,
+      total: matchedGames.length + matchedWiki.length + matchedTalks.length
+    };
+  }, [trimmed, catById]);
+
+  function openGame(id: string) {
+    stopSpeaking();
+    window.location.hash = `#/g/${id}`;
+  }
+
+  function openHall(id: CategoryId) {
+    stopSpeaking();
+    window.location.hash = `#/c/${id}`;
+  }
 
   return (
     <div className="page home">
       <header className="home-title">
         <h1><span aria-hidden="true">🔬</span> 科学小游戏大冒险</h1>
-        <p>小念和爸爸的动手科学馆：九大科学工程展厅，把数学、声光电磁、机械、建筑、化学、生命、地理、天文与计算逻辑玩明白</p>
+        <p>小念和爸爸的动手科学馆 · 推开九扇大门，亲手玩懂世界运转的秘密</p>
       </header>
 
       <div className="hub-progress">
@@ -49,23 +100,120 @@ export function HubPage({ settings }: { settings: Settings }) {
 
       <DuoStage chats={hubChats} />
 
+      <section className="hub-finder" aria-label="快速寻找实验或随便玩一个">
+        <div className="hub-finder-bar">
+          <label className="hub-search">
+            <span className="hub-search-icon" aria-hidden="true">🔍</span>
+            <input
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="搜一搜实验、现象或科学家：如 齿轮、彩虹、造桥、孟德尔、密码……"
+              aria-label="搜索科学实验、大师故事或问答"
+            />
+            {query && (
+              <button
+                type="button"
+                className="hub-search-clear"
+                onClick={() => setQuery("")}
+                aria-label="清空搜索"
+              >
+                ✕
+              </button>
+            )}
+          </label>
+          <button
+            type="button"
+            className="primary-btn hub-random-btn"
+            onClick={() => openGame(pickRandomGameId(book))}
+          >
+            🎲 随便玩一个
+          </button>
+        </div>
+
+        {searchResults && (
+          <div className="hub-search-results" aria-live="polite">
+            <div className="hub-results-head">
+              <strong>
+                {searchResults.total > 0
+                  ? `找到 ${searchResults.games.length} 个实验、${searchResults.wiki.length} 段故事、${searchResults.talks.length} 个问答`
+                  : "没搜到这个词呢，试试下面这几个热门词？"}
+              </strong>
+              <div className="hub-quick-tags">
+                {QUICK_KEYWORDS.map((kw) => (
+                  <button key={kw} type="button" className="pill-btn hub-kw-chip" onClick={() => setQuery(kw)}>
+                    {kw}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {searchResults.games.length > 0 && (
+              <div className="modes hub-results-grid">
+                {searchResults.games.map((game) => {
+                  const earned = Math.min(game.meta.maxStars, sumStars(book[game.meta.id]));
+                  const hall = catById[game.meta.category];
+                  return (
+                    <button
+                      key={game.meta.id}
+                      type="button"
+                      className="mode-card"
+                      style={{ "--bubble": hall?.color ?? "#ff9f43" } as CSSProperties}
+                      onClick={() => openGame(game.meta.id)}
+                    >
+                      <span className="mode-emoji" aria-hidden="true">{game.meta.emoji}</span>
+                      <strong>
+                        {game.meta.title}
+                        <span className="mode-tag">{hall?.emoji} {hall?.title}</span>
+                      </strong>
+                      <small>{game.meta.blurb}</small>
+                      <span className="mode-count">
+                        <span>{earned > 0 ? `⭐ ${earned} / ${game.meta.maxStars}` : `可拿 ${game.meta.maxStars} 颗星`}</span>
+                        <span>去动手 →</span>
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
+            {searchResults.wiki.length > 0 && (
+              <WikiSection
+                items={searchResults.wiki}
+                colorsByCategory={colorByCat}
+                title="📚 匹配的大师故事与居家小实验"
+                subtitle=""
+              />
+            )}
+
+            {searchResults.talks.length > 0 && (
+              <TalksSection talks={searchResults.talks} title="💬 匹配的小念问爸爸" />
+            )}
+          </div>
+        )}
+      </section>
+
       <section aria-labelledby="hub-halls-title">
         <div className="section-head">
           <h2 id="hub-halls-title" className="section-title">九大科学工程展厅</h2>
-          <span className="section-sub">推开任意一扇门，听小念和爸爸聊这门学科的奇妙脾气</span>
+          <span className="section-sub">
+            共 {games.length} 个动手实验 · {scienceWiki.length} 段大师百宝箱 · {scienceTalks.length} 组父子问答，全在各馆门后
+          </span>
         </div>
         <div className="modes">
           {categories.map((category) => {
             const list = gamesIn(category.id);
+            const hallWikiCount = scienceWiki.filter((w) => w.category === category.id).length;
+            const hallTalkCount = scienceTalks.filter((t) => t.category === category.id).length;
             const hallMax = list.reduce((acc, g) => acc + g.meta.maxStars, 0);
             const hallEarned = list.reduce((acc, g) => acc + Math.min(g.meta.maxStars, sumStars(book[g.meta.id])), 0);
             return (
               <button
                 key={category.id}
                 type="button"
-                className="mode-card"
+                className="mode-card hall-card"
                 style={{ "--bubble": category.color } as CSSProperties}
-                onClick={() => { window.location.hash = `#/c/${category.id}`; }}
+                onClick={() => openHall(category.id)}
               >
                 <span className="mode-emoji" aria-hidden="true">{category.emoji}</span>
                 <strong>
@@ -73,8 +221,13 @@ export function HubPage({ settings }: { settings: Settings }) {
                   <span className="mode-tag">{list.length} 个实验</span>
                 </strong>
                 <small>{category.blurb}</small>
+                <span className="hall-preview" aria-hidden="true">
+                  {list.map((g) => (
+                    <span key={g.meta.id} className="hall-chip">{g.meta.emoji} {g.meta.title}</span>
+                  ))}
+                </span>
                 <span className="mode-count">
-                  <span>{list.map((g) => g.meta.emoji).join(" ")}</span>
+                  <span>📚 {hallWikiCount} 故事 · 💬 {hallTalkCount} 问答</span>
                   <span>⭐ {hallEarned} / {hallMax} →</span>
                 </span>
               </button>
@@ -83,78 +236,8 @@ export function HubPage({ settings }: { settings: Settings }) {
         </div>
       </section>
 
-      <section aria-labelledby="hub-games-title">
-        <div className="section-head">
-          <h2 id="hub-games-title" className="section-title">全部动手实验台</h2>
-          <span className="section-sub">共 {games.length} 个小游戏 · 点开就能直接玩</span>
-        </div>
-
-        <div className="filter-tabs" role="tablist" aria-label="按展厅筛选">
-          <button
-            type="button"
-            role="tab"
-            aria-selected={filter === "all"}
-            className={`filter-tab${filter === "all" ? " is-active" : ""}`}
-            style={{ "--c": "#ff9f43" } as CSSProperties}
-            onClick={() => setFilter("all")}
-          >
-            ✨ 全部 ({games.length})
-          </button>
-          {categories.map((cat) => {
-            const count = gamesIn(cat.id).length;
-            return (
-              <button
-                key={cat.id}
-                type="button"
-                role="tab"
-                aria-selected={filter === cat.id}
-                className={`filter-tab${filter === cat.id ? " is-active" : ""}`}
-                style={{ "--c": cat.color } as CSSProperties}
-                onClick={() => setFilter(cat.id)}
-              >
-                <span aria-hidden="true">{cat.emoji}</span> {cat.title} ({count})
-              </button>
-            );
-          })}
-        </div>
-
-        <div className={`modes${shownGames.length === 5 ? " is-five" : ""}`}>
-          {shownGames.map((game) => {
-            const earned = Math.min(game.meta.maxStars, sumStars(book[game.meta.id]));
-            const accent = colorByCat[game.meta.category] ?? "#ff9f43";
-            return (
-              <button
-                key={game.meta.id}
-                type="button"
-                className="mode-card"
-                style={{ "--bubble": accent } as CSSProperties}
-                onClick={() => { window.location.hash = `#/g/${game.meta.id}`; }}
-              >
-                <span className="mode-emoji" aria-hidden="true">{game.meta.emoji}</span>
-                <strong>
-                  {game.meta.title}
-                  <span className="mode-tag">{game.meta.tag}</span>
-                </strong>
-                <small>{game.meta.blurb}</small>
-                <span className="mode-count">
-                  <span>{earned > 0 ? `⭐ ${earned} / ${game.meta.maxStars}` : `可拿 ${game.meta.maxStars} 颗星`}</span>
-                  <span>去动手 →</span>
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </section>
-
-      <WikiSection
-        items={filter === "all" ? scienceWiki : scienceWiki.filter((w) => w.category === filter)}
-        colorsByCategory={colorByCat}
-      />
-
-      <TalksSection talks={filter === "all" ? scienceTalks : scienceTalks.filter((t) => t.category === filter)} />
-
       <p className="home-credit">
-        小念和爸爸的互动科学馆 · 每个实验都能亲手调参数、听语音讲解、收集三星勋章
+        选一座展厅推门进去，就能玩遍馆内实验、读科学史真事、听小念和爸爸一问一答
       </p>
     </div>
   );

@@ -24,7 +24,7 @@ description: 为「科学小游戏大冒险」(sci-playground) 设计、实现�
 
 ## 2. 角色口吻：小念 × 爸爸
 
-全站所有台词（关卡引导 `DadSays`、过关欢呼 `WinCard.cheer`、原理解密 `WinCard.explain`、`talks.ts`、`wiki.ts`）必须贴合人物设定且适合中文语音朗读（Web Speech `zh-CN`）：
+全站所有台词（关卡引导 `DadSays`、过关欢呼 `WinCard.cheer`、原理解密 `WinCard.explain`、`talks.ts`、`wiki.ts`）必须贴合人物设定且使用「小念和爸爸」系列统一的 `edge-tts` 神经网络音色（小念 `zh-CN-YunxiaNeural +0%`，爸爸 `zh-CN-YunxiNeural -5%`，由 `npm run voice` 自动增量合成到 `public/voice/`）：
 
 - **小念（7 岁男孩）**：眼睛亮、爱追问、喜欢拿滑梯/自行车/厨房/积木打比方。句子短促有活力（单句建议 15～45 字）。
 - **爸爸**：温和、平视孩子、重实验证据。
@@ -81,6 +81,7 @@ npm run game:new -- <hall> <id> "<中文标题>" "<emoji>" --write
 每次交付前**必须**跑通以下全部命令且零报错：
 
 ```bash
+npm run voice          # 自动增量补齐新增台词的小念 & 爸爸神经网络 MP3 配音与 voice-manifest.json
 npm run typecheck
 npm run check
 npm test

@@ -21,7 +21,8 @@
 | `npm run game:new -- <hall> <id> "<中文标题>" "[emoji]" --write` | 生成 `logic.ts` + `index.tsx` 模板并自动注册到 `src/catalog/games.ts` |
 | `npm run typecheck` | `tsc --noEmit` 全量严格类型检查 |
 | `npm run check` | 运行仓库规则守卫（导入后缀、纯逻辑层、目录注册、`backLabel`、问答与百科完整性）并输出展馆统计 |
-| `npm test` | Node 24 原生单测（覆盖全部实验纯逻辑 + `check-rules` 一致性守卫） |
+| `npm run voice` | 增量采集全馆台词并用 `edge-tts` + `ffmpeg` 生成「小念（`zh-CN-YunxiaNeural`）& 爸爸（`zh-CN-YunxiNeural`）」标准语音 MP3 与清单 |
+| `npm test` | Node 24 原生单测（覆盖全部实验纯逻辑、语音清单完整性 + `check-rules` 一致性守卫） |
 | `npm run build` | 类型检查 + Vite 生产打包到 `dist/` |
 | `npm run smoke` | 无头 Edge/Chrome 全量巡检首页、9 大展馆与全部实验（桌面 `1280×900` + 手机 `390×844` 零报错、零横向溢出、零 SVG 文字重叠） |
 | `npm run smoke -- <id>...` | 秒级定向巡检刚新增或修改的实验（例如 `npm run smoke -- bridge gears`） |
@@ -30,6 +31,7 @@
 **交付前四步必跑门禁**：
 
 ```bash
+npm run voice                          # 若新增或修改了任何小念/爸爸台词、问答或百科卡片，必须重跑生成同款神经网络配音！
 npm run typecheck
 npm run check
 npm test
@@ -44,8 +46,8 @@ npm run smoke -- <新增或改动的gameId>   # 若改动公共壳层/样式则�
 
 | Hash 路由 | 页面组件 | 说明 |
 | --- | --- | --- |
-| `#/` | `src/shell/HubPage.tsx` | 科学馆大厅：父子开场舞台、9 大展馆卡片、全部实验筛选、精选问答与百宝箱 |
-| `#/c/<hall>` | `src/shell/CategoryPage.tsx` | 分馆展厅：本馆父子导览、本馆实验台、本馆专属百宝箱与问答 |
+| `#/` | `src/shell/HubPage.tsx` | 科学馆大厅：父子开场舞台、快速寻宝栏（搜索 + 🎲 随便玩一个）、9 大展馆门厅卡片 |
+| `#/c/<hall>` | `src/shell/CategoryPage.tsx` | 分馆展厅：本馆父子导览、分区直达锚点、本馆实验台、本馆专属百宝箱与问答 |
 | `#/g/<id>` | `src/games/.../<id>/index.tsx` | 具体互动实验台（多关卡挑战、SVG 动态画布、滑块/按钮控制、三星结算） |
 
 ### 九大展馆边界（选对归属！）
@@ -75,7 +77,7 @@ npm run smoke -- <新增或改动的gameId>   # 若改动公共壳层/样式则�
   - `GameKit.tsx`：`StageStrip`、`Meter`、`HintBox`、`WinCard`、`DuoStage`、`TalksSection`、`WikiSection`
   - `Slider.tsx`：带 `− / +` 逐格微调按钮的无障碍 `Slider` 及 `fixed` / `degrees` 格式化器
   - `progress.ts`：`recordStars`、`useGameStars`、`useStarBook`、`sumStars`（`localStorage` 持久化）
-  - `speech.ts`：`say`、`stopSpeaking`、`nian`、`dad`（Web Speech `zh-CN` 串行队列）
+  - `speech.ts`：`say`、`stopSpeaking`、`nian`、`dad`、`hasClip`（优先播放 `public/voice/` 预生成的小念 `YunxiaNeural` & 爸爸 `YunxiNeural` MP3，动态数字句自动回退 Web Speech）
   - `audio.ts`：`chime(true | false)` WebAudio 轻音效
 - `src/games/<folder>/<id>/`：每个实验独立目录，标准双文件结构 `logic.ts`（纯算法/物理公式）+ `index.tsx`（React + SVG 实验台）
 - `src/index.css`：设计令牌与全局响应式布局（`.workbench` 桌面双栏、窄屏自动单栏）

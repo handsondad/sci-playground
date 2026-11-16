@@ -33,6 +33,7 @@ const MIME = {
   ".css": "text/css; charset=utf-8",
   ".svg": "image/svg+xml",
   ".png": "image/png",
+  ".mp3": "audio/mpeg",
   ".json": "application/json; charset=utf-8",
   ".ico": "image/x-icon"
 };
@@ -216,15 +217,17 @@ const INSPECT_DOM_EXPR = `(() => {
 function parseTargets(args) {
   const positional = [];
   let shotsDir = null;
-  let forceBuild = false;
+  let skipBuild = false;
   let desktopOnly = false;
 
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
     if (arg === "--shots" || arg === "--out") {
       shotsDir = args[i + 1] && !args[i + 1].startsWith("--") ? args[++i] : "tmp-shots";
+    } else if (arg === "--no-build") {
+      skipBuild = true;
     } else if (arg === "--build") {
-      forceBuild = true;
+      skipBuild = false;
     } else if (arg === "--desktop-only") {
       desktopOnly = true;
     } else if (!arg.startsWith("--")) {
@@ -247,13 +250,13 @@ function parseTargets(args) {
     }
   }
 
-  return { routes, shotsDir, forceBuild, desktopOnly };
+  return { routes, shotsDir, skipBuild, desktopOnly };
 }
 
 async function main() {
-  const { routes, shotsDir, forceBuild, desktopOnly } = parseTargets(process.argv.slice(2));
+  const { routes, shotsDir, skipBuild, desktopOnly } = parseTargets(process.argv.slice(2));
 
-  if (forceBuild || !fs.existsSync(path.join(DIST_DIR, "index.html"))) {
+  if (!skipBuild || !fs.existsSync(path.join(DIST_DIR, "index.html"))) {
     console.log("📦 正在构建生产包 (npm run build)...");
     execSync("npm run build", { cwd: ROOT, stdio: "inherit" });
   }

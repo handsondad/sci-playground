@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit",
     "check": "node tools/check-rules.mjs",
     "test": "node --test tests/*.test.mjs",
+    "voice": "node tools/voice/generate.mjs",
     "game:new": "node tools/new-game.mjs",
     "smoke": "node tools/smoke.mjs",
     "shots": "node tools/smoke.mjs --shots tmp-shots"
