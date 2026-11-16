@@ -1,5 +1,7 @@
 # 🔬 科学小游戏大冒险
 
+在线访问：<https://handsondad.github.io/sci-playground/>
+
 以 `fourier-puzzle-game` 的绘本互动样式与「小念和爸爸」双人启发式对话形式打造的**动手科学馆集合**，并吸收了 **PhET Interactive Simulations**、**旧金山探索馆（Exploratorium Science Snacks）**、**Mathigon Polypad**、**HHMI BioInteractive** 与 **NASA Space Place** 的经典互动实验精髓。全馆分为五大展厅、共 **28 个可动手操作的科学小实验**（总计 **330 颗探索勋章**），外加 **15 张科学史大师故事与居家小实验百宝箱** 及 **18 篇「小念问爸爸」语音问答**：
 
 - **➗ 数学馆（5 个实验）**：一笔画（欧拉路径）、汉诺塔（递归）、三扇门（蒙提霍尔概率与百次模拟）、筛质数寻宝（埃拉托斯特尼筛法）、四色地图（四色定理相邻染色）
@@ -23,3 +25,7 @@ npm run dev
 npm test
 npm run build
 ```
+
+## 部署到 GitHub Pages
+
+推送到 `main` 分支后，`.github/workflows/deploy.yml` 会自动执行 `npm ci`、`npm test`、`npm run build` 并发布到 GitHub Pages（仓库 **Settings → Pages → Build and deployment → Source** 选择 **GitHub Actions**）。
