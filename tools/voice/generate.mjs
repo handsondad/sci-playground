@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // 用 edge-tts 给全馆台词生成小念（zh-CN-YunxiaNeural）和爸爸（zh-CN-YunxiNeural）的统一配音，
-// 写到 public/voice/<nian|dad>/<指纹>.mp3，清单记在 src/catalog/voice-manifest.json。
+// 写到 public/voice/<nian|dad>/<指纹>.mp3，完整清单记在 src/catalog/voice-manifest.json（仅工具与测试使用），
+// 同时生成前端用的精简指纹表 src/catalog/voice-clips.ts（浏览器现算 SHA-1 指纹判断有无预录音频）。
 // 只生成新增或改过的句子，支持随时中断续跑：
 //   npm run voice
 //   node tools/voice/generate.mjs --dry-run
@@ -11,10 +12,11 @@ import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { collectVoiceLines } from "./collect.mjs";
-import { clipHash, voices } from "./voices.mjs";
+import { clipHash, renderClipIndex, voices } from "./voices.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const manifestPath = join(root, "src", "catalog", "voice-manifest.json");
+const clipIndexPath = join(root, "src", "catalog", "voice-clips.ts");
 const voiceDir = join(root, "public", "voice");
 const parallel = 8;
 const dryRun = process.argv.includes("--dry-run");
@@ -46,10 +48,15 @@ function save() {
   const sorted = Object.fromEntries(
     Object.entries(manifest.clips).sort(([a], [b]) => a.localeCompare(b))
   );
-  writeFileSync(`${manifestPath}.tmp`, `${JSON.stringify({ voices, clips: sorted }, null, 1)}\n`);
+  writeAtomic(manifestPath, `${JSON.stringify({ voices, clips: sorted }, null, 1)}\n`);
+  writeAtomic(clipIndexPath, renderClipIndex(manifest.clips));
+}
+
+function writeAtomic(path, content) {
+  writeFileSync(`${path}.tmp`, content);
   for (let attempt = 1; ; attempt += 1) {
     try {
-      renameSync(`${manifestPath}.tmp`, manifestPath);
+      renameSync(`${path}.tmp`, path);
       return;
     } catch (error) {
       if (attempt >= 20 || !["EPERM", "EBUSY", "EACCES"].includes(error.code)) throw error;

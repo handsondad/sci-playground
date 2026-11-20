@@ -13,6 +13,7 @@ import {
   outcomeLabel,
   simulateTrajectory
 } from "./logic.ts";
+import { meta } from "./meta.ts";
 
 const ACCENT = "#3d5a99";
 const CX = 190;
@@ -245,15 +246,4 @@ function CannonGame({ exit, sound, setSound }: GameProps) {
   );
 }
 
-export const cannon: GameModule = {
-  meta: {
-    id: "cannon",
-    title: "牛顿大炮",
-    category: "astro",
-    emoji: "🚀",
-    tag: "宇宙速度与入轨",
-    blurb: "站在牛顿假想的高山之巅水平开炮，从落回大海一路加速到 7.9 km/s 环绕地球与 11.2 km/s 奔向深空。",
-    maxStars: cannonLevels.length * 3
-  },
-  Play: CannonGame
-};
+export const cannon: GameModule = { meta, Play: CannonGame };

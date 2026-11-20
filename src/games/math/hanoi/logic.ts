@@ -1,5 +1,8 @@
 export type Towers = number[][];
 
+/** 三关的盘子层数。 */
+export const SIZES = [3, 4, 5] as const;
+
 export function startTowers(n: number): Towers {
   return [Array.from({ length: n }, (_, i) => n - i), [], []];
 }

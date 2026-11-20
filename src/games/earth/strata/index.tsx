@@ -6,6 +6,7 @@ import { chime } from "../../../kit/audio.ts";
 import { recordStars, sumStars, useGameStars } from "../../../kit/progress.ts";
 import { dad, nian, say } from "../../../kit/speech.ts";
 import { isChronological, strataLevels, swapAt, type StratumItem } from "./logic.ts";
+import { meta } from "./meta.ts";
 
 const ACCENT = "#0ea5e9";
 
@@ -421,15 +422,4 @@ function StrataGame({ exit, sound, setSound }: GameProps) {
   );
 }
 
-export const strata: GameModule = {
-  meta: {
-    id: "strata",
-    title: "地层寻化石",
-    category: "earth",
-    emoji: "🦕",
-    tag: "叠覆律 · 沧海桑田",
-    blurb: "从三叶虫、树蕨煤层、霸王龙到火山侵入岩脉，破译岩石崖壁里的地球亿万年日记。",
-    maxStars: strataLevels.length * 3
-  },
-  Play: StrataGame
-};
+export const strata: GameModule = { meta, Play: StrataGame };

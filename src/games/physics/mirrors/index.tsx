@@ -6,6 +6,7 @@ import { chime } from "../../../kit/audio.ts";
 import { recordStars, sumStars, useGameStars } from "../../../kit/progress.ts";
 import { dad, say } from "../../../kit/speech.ts";
 import { cast, mirrorLevels, type Dir, type Mirror } from "./logic.ts";
+import { meta } from "./meta.ts";
 
 const ORDER: readonly (Mirror | "")[] = ["", "/", "\\"];
 const ACCENT = "#ff7a45";
@@ -242,15 +243,4 @@ export function MirrorsGame({ exit, sound, setSound }: GameProps) {
   );
 }
 
-export const mirrors = {
-  meta: {
-    id: "mirrors",
-    category: "physics" as const,
-    title: "镜子迷宫",
-    emoji: "🔦",
-    blurb: "摆下 45° 小斜镜，让金色激光束拐过砖墙、正中红宝石！",
-    tag: "光学 · 镜面反射",
-    maxStars: mirrorLevels.length * 3
-  },
-  Play: MirrorsGame
-};
+export const mirrors = { meta, Play: MirrorsGame };

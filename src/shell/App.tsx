@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { categories } from "../catalog/categories.ts";
 import { games, gamesIn } from "../catalog/games.ts";
 import { stopSpeaking } from "../kit/speech.ts";
 import { usePersisted } from "../kit/usePersisted.ts";
 import { CategoryPage } from "./CategoryPage.tsx";
 import { HubPage } from "./HubPage.tsx";
+import { GameLoading, LoadBoundary, lazyGame } from "./lazyGame.tsx";
 
 type Route =
   | { kind: "hub" }
@@ -44,15 +45,19 @@ export default function App() {
         </div>
       );
     }
-    const Play = game.Play;
+    const Play = lazyGame(game);
     return (
-      <Play
-        path={route.path}
-        go={(sub) => { window.location.hash = sub ? `#/g/${game.meta.id}/${sub}` : `#/g/${game.meta.id}`; }}
-        exit={() => { window.location.hash = `#/c/${game.meta.category}`; }}
-        sound={sound}
-        setSound={setSound}
-      />
+      <LoadBoundary key={game.meta.id}>
+        <Suspense fallback={<GameLoading />}>
+          <Play
+            path={route.path}
+            go={(sub) => { window.location.hash = sub ? `#/g/${game.meta.id}/${sub}` : `#/g/${game.meta.id}`; }}
+            exit={() => { window.location.hash = `#/c/${game.meta.category}`; }}
+            sound={sound}
+            setSound={setSound}
+          />
+        </Suspense>
+      </LoadBoundary>
     );
   }
 

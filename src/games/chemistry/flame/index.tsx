@@ -6,6 +6,7 @@ import { chime } from "../../../kit/audio.ts";
 import { recordStars, sumStars, useGameStars } from "../../../kit/progress.ts";
 import { dad, say } from "../../../kit/speech.ts";
 import { checkFlameAnswer, findIon, flameLevels, METAL_IONS, type IonId } from "./logic.ts";
+import { meta } from "./meta.ts";
 
 const ACCENT = "#a66cff";
 
@@ -320,15 +321,4 @@ function FlameGame({ exit, sound, setSound }: GameProps) {
   );
 }
 
-export const flame: GameModule = {
-  meta: {
-    id: "flame",
-    title: "焰色烟花秀",
-    category: "chemistry",
-    emoji: "🎆",
-    tag: "金属焰色反应",
-    blurb: "用铂丝蘸取锂、钠、钾、钙、钡、铜盐送入本生灯，看电子跃迁烧出漫天绚丽烟花。",
-    maxStars: flameLevels.length * 3
-  },
-  Play: FlameGame
-};
+export const flame: GameModule = { meta, Play: FlameGame };

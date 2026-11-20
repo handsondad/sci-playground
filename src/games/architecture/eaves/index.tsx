@@ -7,6 +7,7 @@ import { chime } from "../../../kit/audio.ts";
 import { recordStars, sumStars, useGameStars } from "../../../kit/progress.ts";
 import { dad, say } from "../../../kit/speech.ts";
 import { checkEavesGoal, eavesLevels } from "./logic.ts";
+import { meta } from "./meta.ts";
 
 const ACCENT = "#b45309";
 const PX_PER_M = 52;
@@ -388,15 +389,4 @@ function EavesGame({ exit, sound, setSound }: GameProps) {
   );
 }
 
-export const eaves: GameModule = {
-  meta: {
-    id: "eaves",
-    title: "冬暖夏凉挑檐",
-    category: "architecture",
-    emoji: "🏯",
-    tag: "被动式建筑 · 太阳高度角",
-    blurb: "顺应冬至与夏至正午太阳高度角之差，算出恰到好处的挑檐深度，零空调实现夏天遮烈日、冬天满屋暖阳！",
-    maxStars: 12
-  },
-  Play: EavesGame
-};
+export const eaves: GameModule = { meta, Play: EavesGame };

@@ -14,6 +14,7 @@ import {
   runForestAutomata,
   type AutomataState
 } from "./logic.ts";
+import { meta } from "./meta.ts";
 
 const ACCENT = "#14b8a6";
 
@@ -270,15 +271,4 @@ function AutomataGame({ exit, sound, setSound }: GameProps) {
   );
 }
 
-export const automata: GameModule = {
-  meta: {
-    id: "automata",
-    title: "元胞森林防火",
-    emoji: "🌲",
-    category: "computing",
-    tag: "元胞自动机 · 逾渗相变",
-    blurb: "四邻域网格模拟山火蔓延：亲眼看见 59% 逾渗相变临界点，规划防火隔离沟守护整片森林！",
-    maxStars: automataLevels.length * 3
-  },
-  Play: AutomataGame
-};
+export const automata: GameModule = { meta, Play: AutomataGame };

@@ -12,6 +12,7 @@ import {
   hohmannLevels,
   type HohmannState
 } from "./logic.ts";
+import { meta } from "./meta.ts";
 
 const ACCENT = "#3d5a99";
 const CX = 280;
@@ -263,15 +264,4 @@ function HohmannGame({ exit, sound, setSound }: GameProps) {
   );
 }
 
-export const hohmann: GameModule = {
-  meta: {
-    id: "hohmann",
-    title: "霍曼火星变轨",
-    emoji: "🚀",
-    category: "astro",
-    tag: "椭圆变轨 · 发射窗口",
-    blurb: "算准 26 个月一遇的火星窗口与火箭点火速度，用最省油的霍曼椭圆会师深空！",
-    maxStars: hohmannLevels.length * 3
-  },
-  Play: HohmannGame
-};
+export const hohmann: GameModule = { meta, Play: HohmannGame };

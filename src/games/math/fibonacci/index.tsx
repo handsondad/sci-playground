@@ -14,6 +14,7 @@ import {
   packingScore,
   seedPositions
 } from "./logic.ts";
+import { meta } from "./meta.ts";
 
 const ACCENT = "#4d96ff";
 const CX = 180;
@@ -400,15 +401,4 @@ function FibonacciGame({ exit, sound, setSound }: GameProps) {
   );
 }
 
-export const fibonacci: GameModule = {
-  meta: {
-    id: "fibonacci",
-    title: "向日葵螺旋",
-    category: "math",
-    emoji: "🌻",
-    tag: "黄金角 · 斐波那契",
-    blurb: "拨动 140 颗瓜子的生长发散角，看分数角如何挤成稀疏直线，亲手揭开 137.5° 黄金角与 8/13 斐波那契螺线的秘密。",
-    maxStars: fibonacciLevels.length * 3
-  },
-  Play: FibonacciGame
-};
+export const fibonacci: GameModule = { meta, Play: FibonacciGame };

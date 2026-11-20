@@ -12,6 +12,7 @@ import {
   hockeyLevels,
   simulatePuck
 } from "./logic.ts";
+import { meta } from "./meta.ts";
 
 const ACCENT = "#f59e0b";
 
@@ -318,15 +319,4 @@ function HockeyGame({ exit, sound, setSound }: GameProps) {
   );
 }
 
-export const hockey: GameModule = {
-  meta: {
-    id: "hockey",
-    title: "电场冰球",
-    emoji: "🏒",
-    category: "physics",
-    tag: "库仑定律 · 静电偏转",
-    blurb: "给场上电极充上正电或负电，用同种相斥、异种相吸隔空打出 S 形香蕉球破门！",
-    maxStars: hockeyLevels.length * 3
-  },
-  Play: HockeyGame
-};
+export const hockey: GameModule = { meta, Play: HockeyGame };

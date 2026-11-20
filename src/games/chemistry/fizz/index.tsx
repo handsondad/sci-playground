@@ -7,6 +7,7 @@ import { chime } from "../../../kit/audio.ts";
 import { recordStars, sumStars, useGameStars } from "../../../kit/progress.ts";
 import { dad, say } from "../../../kit/speech.ts";
 import { balloons, fizz, gas, type Fizz } from "./logic.ts";
+import { meta } from "./meta.ts";
 
 const ACCENT = "#2fb380";
 
@@ -229,15 +230,4 @@ export function FizzGame({ exit, sound, setSound }: GameProps) {
   );
 }
 
-export const fizzBalloon = {
-  meta: {
-    id: "fizz",
-    category: "chemistry" as const,
-    title: "小苏打气球",
-    emoji: "🎈",
-    blurb: "小苏打遇白醋冒出二氧化碳吹大橡皮气球！谁少谁说了算，小心别把气球吹爆。",
-    tag: "反应 · 限量反应物",
-    maxStars: balloons.length * 3
-  },
-  Play: FizzGame
-};
+export const fizzBalloon = { meta, Play: FizzGame };

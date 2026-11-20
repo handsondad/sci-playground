@@ -7,6 +7,7 @@ import { chime } from "../../../kit/audio.ts";
 import { recordStars, sumStars, useGameStars } from "../../../kit/progress.ts";
 import { dad, say } from "../../../kit/speech.ts";
 import { lengthFor, matched, period, swings } from "./logic.ts";
+import { meta } from "./meta.ts";
 
 const ACCENT = "#ff7a45";
 
@@ -207,15 +208,4 @@ export function PendulumGame({ exit, sound, setSound }: GameProps) {
   );
 }
 
-export const pendulum = {
-  meta: {
-    id: "pendulum",
-    category: "physics" as const,
-    title: "摆的秘密",
-    emoji: "🕰️",
-    blurb: "跟目标影子同频摆动！亲手验证：把砝码加重三倍，钟摆快慢竟纹丝不动。",
-    tag: "振动 · 单摆等时性",
-    maxStars: swings.length * 3
-  },
-  Play: PendulumGame
-};
+export const pendulum = { meta, Play: PendulumGame };

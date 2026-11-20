@@ -7,6 +7,7 @@ import { chime } from "../../../kit/audio.ts";
 import { recordStars, sumStars, useGameStars } from "../../../kit/progress.ts";
 import { dad, say } from "../../../kit/speech.ts";
 import { angleDiff, hitPhase, phases, wrap } from "./logic.ts";
+import { meta } from "./meta.ts";
 
 const ACCENT = "#3f8efc";
 const STARS_BG = [
@@ -208,15 +209,4 @@ export function MoonGame({ exit, sound, setSound }: GameProps) {
   );
 }
 
-export const moon = {
-  meta: {
-    id: "moon",
-    category: "astro" as const,
-    title: "月相",
-    emoji: "🌙",
-    blurb: "在深空轨道上亲手拨动月球，对照望远镜视野解开新月、弦月和满月的几何秘密！",
-    tag: "天体 · 月相盈亏",
-    maxStars: phases.length * 3
-  },
-  Play: MoonGame
-};
+export const moon = { meta, Play: MoonGame };

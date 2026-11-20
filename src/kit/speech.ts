@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from "react";
-import manifest from "../catalog/voice-manifest.json";
+import { voiceClips, voiceProfiles } from "../catalog/voice-clips.ts";
+import { sha1Hex } from "./voice-key.ts";
 
 export type Who = "nian" | "dad";
 export type Line = { who: Who; text: string };
@@ -9,10 +10,15 @@ export const nian = (text: string): Line => ({ who: "nian", text });
 export const dad = (text: string): Line => ({ who: "dad", text });
 export const pairLines = ([n, d]: Pair): Line[] => [nian(n), dad(d)];
 
-const clips = (manifest as { clips: Record<string, { file: string; seconds: number }> }).clips;
 const base = import.meta.env.BASE_URL;
 
-export const hasClip = (who: Who, text: string) => Boolean(clips[`${who}|${text.trim()}`]);
+/** 与 tools/voice/voices.mjs 的 clipHash 同一算法：sha1("音色|语速|台词") 取前 12 位。 */
+function clipUrl(who: Who, rawText: string): string | null {
+  const hash = sha1Hex(`${voiceProfiles[who]}|${rawText.trim()}`).slice(0, 12);
+  return voiceClips[who].has(hash) ? `${base}voice/${who}/${hash}.mp3` : null;
+}
+
+export const hasClip = (who: Who, text: string) => clipUrl(who, text) !== null;
 
 const canSynth = () => typeof window !== "undefined" && "speechSynthesis" in window;
 
@@ -54,15 +60,23 @@ function setSpeaking(line: Line | null) {
   listeners.forEach((listener) => listener());
 }
 
-function play(who: Who, rawText: string, token: number): Promise<void> {
-  const text = rawText.trim();
-  const clip = clips[`${who}|${text}`];
-  if (!clip) return synth(who, text, token);
+/** 有预录 MP3 的句子提前建好 Audio 开始缓冲，播放上一句时下一句就在下载了。 */
+function prepare(line: Line): HTMLAudioElement | null {
+  const url = clipUrl(line.who, line.text);
+  if (!url) return null;
+  const element = new Audio(url);
+  element.preload = "auto";
+  return element;
+}
+
+function play(line: Line, element: HTMLAudioElement | null, token: number): Promise<void> {
+  const text = line.text.trim();
+  if (!element) return synth(line.who, text, token);
   return new Promise((resolve) => {
     if (token !== run) return resolve();
-    audio = new Audio(`${base}voice/${clip.file}.mp3`);
+    audio = element;
     audio.onended = () => resolve();
-    audio.onerror = () => synth(who, text, token).then(resolve);
+    audio.onerror = () => synth(line.who, text, token).then(resolve);
     audio.onpause = () => resolve();
     audio.play().catch(() => resolve());
   });
@@ -72,10 +86,13 @@ function play(who: Who, rawText: string, token: number): Promise<void> {
 export async function say(...lines: Line[]) {
   stopSpeaking();
   const token = run;
-  for (const line of lines) {
+  let upcoming = lines.length > 0 ? prepare(lines[0]) : null;
+  for (let i = 0; i < lines.length; i++) {
     if (token !== run) return;
-    setSpeaking(line);
-    await play(line.who, line.text, token);
+    const current = upcoming;
+    upcoming = i + 1 < lines.length ? prepare(lines[i + 1]) : null;
+    setSpeaking(lines[i]);
+    await play(lines[i], current, token);
   }
   if (token === run) setSpeaking(null);
 }

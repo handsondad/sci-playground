@@ -8,22 +8,9 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
+        // 各实验经 games.ts 的 load() 动态导入，Rollup 会自动为每个实验切出独立代码块
         manualChunks(id) {
           if (id.includes("node_modules")) return "vendor";
-          const norm = id.replace(/\\/g, "/");
-          if (norm.includes("/games/physics/") || norm.includes("/games/math/")) {
-            return "halls-phys-math";
-          }
-          if (
-            norm.includes("/games/mechanics/") ||
-            norm.includes("/games/architecture/") ||
-            norm.includes("/games/computing/")
-          ) {
-            return "halls-mech-arch-comp";
-          }
-          if (norm.includes("/games/")) {
-            return "halls-chem-bio-earth-astro";
-          }
         }
       }
     }

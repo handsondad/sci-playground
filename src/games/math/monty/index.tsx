@@ -6,6 +6,7 @@ import { chime } from "../../../kit/audio.ts";
 import { recordStars, sumStars, useGameStars } from "../../../kit/progress.ts";
 import { dad, say } from "../../../kit/speech.ts";
 import { hostOpens, switched, tally, wins } from "./logic.ts";
+import { meta } from "./meta.ts";
 
 const ACCENT = "#7c6cf0";
 const STAGES = [
@@ -418,15 +419,4 @@ export function MontyGame({ exit, sound, setSound }: GameProps) {
   );
 }
 
-export const monty = {
-  meta: {
-    id: "monty",
-    category: "math" as const,
-    title: "三扇门",
-    emoji: "🚪",
-    blurb: "主持人揭开一只山羊后，换门胜率竟翻倍！亲手猜门、跑百次模拟、再用十扇门看穿真相。",
-    tag: "概率 · 贝叶斯直觉",
-    maxStars: 9
-  },
-  Play: MontyGame
-};
+export const monty = { meta, Play: MontyGame };

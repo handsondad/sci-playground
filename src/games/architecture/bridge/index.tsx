@@ -6,6 +6,7 @@ import { chime } from "../../../kit/audio.ts";
 import { recordStars, sumStars, useGameStars } from "../../../kit/progress.ts";
 import { dad, say } from "../../../kit/speech.ts";
 import { bridgeLevels, evaluateBridge, isBayTriangulated, type BridgeBar, type BridgeNode } from "./logic.ts";
+import { meta } from "./meta.ts";
 
 const ACCENT = "#b45309";
 
@@ -471,15 +472,4 @@ function BridgeGame({ exit, sound, setSound }: GameProps) {
   );
 }
 
-export const bridge: GameModule = {
-  meta: {
-    id: "bridge",
-    title: "造桥大师",
-    category: "architecture",
-    emoji: "🌉",
-    tag: "三角桁架 · 结构稳定",
-    blurb: "点击虚线槽位加装斜撑与弦杆，用最省的钢材把摇晃的平行四边形桥框锁成稳如泰山的三角形桁架！",
-    maxStars: 12
-  },
-  Play: BridgeGame
-};
+export const bridge: GameModule = { meta, Play: BridgeGame };

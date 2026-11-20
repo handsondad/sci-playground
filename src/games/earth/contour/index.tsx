@@ -12,6 +12,7 @@ import {
   contourLevels,
   slopePercent
 } from "./logic.ts";
+import { meta } from "./meta.ts";
 
 const ACCENT = "#0ea5e9";
 
@@ -567,15 +568,4 @@ function ContourGame({ exit, sound, setSound }: GameProps) {
   );
 }
 
-export const contour: GameModule = {
-  meta: {
-    id: "contour",
-    title: "等高线登山",
-    category: "earth",
-    emoji: "🗺️",
-    tag: "地形判读 · 缓坡陡崖",
-    blurb: "对照俯视等高线图与实时侧面海拔剖面，辨认缓坡陡崖、双峰鞍部与山谷溪流。",
-    maxStars: contourLevels.length * 3
-  },
-  Play: ContourGame
-};
+export const contour: GameModule = { meta, Play: ContourGame };

@@ -15,6 +15,7 @@ import {
   type MediumId,
   type RefractionState
 } from "./logic.ts";
+import { meta } from "./meta.ts";
 
 const ACCENT = "#f59e0b";
 const ORIGIN_X = 240;
@@ -303,15 +304,4 @@ function RefractionGame({ exit, sound, setSound }: GameProps) {
   );
 }
 
-export const refraction: GameModule = {
-  meta: {
-    id: "refraction",
-    title: "激光折射与光纤",
-    emoji: "💎",
-    category: "physics",
-    tag: "斯涅尔定律 · 全反射",
-    blurb: "看激光穿过清水与钻石怎样折弯，跨过临界角把光 100% 锁进海底光纤！",
-    maxStars: refractionLevels.length * 3
-  },
-  Play: RefractionGame
-};
+export const refraction: GameModule = { meta, Play: RefractionGame };

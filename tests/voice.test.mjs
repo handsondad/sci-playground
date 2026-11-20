@@ -37,3 +37,23 @@ test("every static spoken line in the museum has a pre-generated MP3 clip", asyn
     `Missing ${missing.length} voice clips (run 'npm run voice'):\n${missing.slice(0, 10).join("\n")}`
   );
 });
+
+test("frontend clip index and in-browser SHA-1 resolve every manifest clip (no text keys shipped)", async () => {
+  const { sha1Hex } = await import("../src/kit/voice-key.ts");
+  const { voiceClips, voiceProfiles } = await import("../src/catalog/voice-clips.ts");
+  const manifest = JSON.parse(fs.readFileSync(path.join(ROOT, "src/catalog/voice-manifest.json"), "utf8"));
+  const entries = Object.entries(manifest.clips);
+
+  for (const [who, { voice, rate }] of Object.entries(voices)) {
+    assert.equal(voiceProfiles[who], `${voice}|${rate}`);
+  }
+  for (const [key, { file }] of entries) {
+    const sep = key.indexOf("|");
+    const who = key.slice(0, sep);
+    const hash = sha1Hex(`${voiceProfiles[who]}|${key.slice(sep + 1)}`).slice(0, 12);
+    assert.equal(`${who}/${hash}`, file, `fingerprint mismatch for ${key}`);
+    assert.ok(voiceClips[who].has(hash), `voice-clips.ts is stale (run 'npm run voice'): ${file}`);
+  }
+  const indexed = Object.values(voiceClips).reduce((n, set) => n + set.size, 0);
+  assert.equal(indexed, entries.length, "voice-clips.ts lists clips that are not in the manifest (run 'npm run voice')");
+});

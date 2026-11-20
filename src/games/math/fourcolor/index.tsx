@@ -6,6 +6,7 @@ import { chime } from "../../../kit/audio.ts";
 import { recordStars, sumStars, useGameStars } from "../../../kit/progress.ts";
 import { dad, say } from "../../../kit/speech.ts";
 import { conflicts, isValidColoring, MAP_COLORS, mapLevels, usedColorCount } from "./logic.ts";
+import { meta } from "./meta.ts";
 
 const ACCENT = "#4d96ff";
 
@@ -257,15 +258,4 @@ function FourColorGame({ exit, sound, setSound }: GameProps) {
   );
 }
 
-export const fourcolor: GameModule = {
-  meta: {
-    id: "fourcolor",
-    title: "四色地图",
-    category: "math",
-    emoji: "🗺️",
-    tag: "四色定理",
-    blurb: "只拿四支彩色画笔给地图上色，让相邻王国绝不撞色，体验计算机证明的数学传奇。",
-    maxStars: mapLevels.length * 3
-  },
-  Play: FourColorGame
-};
+export const fourcolor: GameModule = { meta, Play: FourColorGame };

@@ -7,6 +7,7 @@ import { chime } from "../../../kit/audio.ts";
 import { recordStars, sumStars, useGameStars } from "../../../kit/progress.ts";
 import { dad, say } from "../../../kit/speech.ts";
 import { arc, landing, onTarget, shots } from "./logic.ts";
+import { meta } from "./meta.ts";
 
 const ACCENT = "#ff7a45";
 
@@ -242,15 +243,4 @@ export function TossGame({ exit, sound, setSound }: GameProps) {
   );
 }
 
-export const toss = {
-  meta: {
-    id: "toss",
-    category: "mechanics" as const,
-    title: "扔得最远",
-    emoji: "🎾",
-    blurb: "调仰角、拉抛物线！找准 45° 最远黄金角，再发现 30° 与 60° 同落点的秘密。",
-    tag: "力学 · 抛体运动",
-    maxStars: shots.length * 3
-  },
-  Play: TossGame
-};
+export const toss = { meta, Play: TossGame };

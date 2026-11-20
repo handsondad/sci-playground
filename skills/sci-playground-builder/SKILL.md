@@ -72,6 +72,7 @@ npm run game:new -- <hall> <id> "<中文标题>" "<emoji>" --write
 1. **必加单元测试**：在 `tests/collection.test.mjs` 导入新游戏的 `logic.ts`，至少断言：
    - 核心科学公式的关键不变量（如守恒律、单调性、特殊角/临界点）；
    - 遍历全部关卡：初始状态未过关，标准解可过关。
+   - 并在 `tests/stars.test.mjs` 的 `derive` 表登记 `meta.ts` 里 `maxStars` 的推导（如 `(m) => m.STAGES.length * 3`）。
 2. **按需扩充问答与百宝箱**：
    - `src/catalog/wiki.ts`：新增卡片时，`id` 唯一、`homeLab` 以 `"🏠 居家小实验："` 开头（用家里常见的杯子、硬币、手电筒、吸管等安全材料即可复现），`relatedGameId` 指向真实已注册游戏 ID。
    - `src/catalog/talks.ts`：新增问答时，标题以好奇提问结尾，至少 2 轮 `nian` / `dad` 对话 + 1 句 `wrap` 总结。
@@ -81,7 +82,7 @@ npm run game:new -- <hall> <id> "<中文标题>" "<emoji>" --write
 每次交付前**必须**跑通以下全部命令且零报错：
 
 ```bash
-npm run voice          # 自动增量补齐新增台词的小念 & 爸爸神经网络 MP3 配音与 voice-manifest.json
+npm run voice          # 自动增量补齐新增台词的小念 & 爸爸神经网络 MP3 配音、voice-manifest.json 与前端短哈希索引 src/catalog/voice-clips.ts
 npm run typecheck
 npm run check
 npm test

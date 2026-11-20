@@ -7,6 +7,7 @@ import { chime } from "../../../kit/audio.ts";
 import { recordStars, sumStars, useGameStars } from "../../../kit/progress.ts";
 import { dad, say } from "../../../kit/speech.ts";
 import { checkQuakeSafety, quakeLevels, type QuakeConfig } from "./logic.ts";
+import { meta } from "./meta.ts";
 
 const ACCENT = "#b45309";
 
@@ -422,15 +423,4 @@ function QuakeGame({ exit, sound, setSound }: GameProps) {
   );
 }
 
-export const quake: GameModule = {
-  meta: {
-    id: "quake",
-    title: "摩天楼抗震",
-    category: "architecture",
-    emoji: "🏢",
-    tag: "共振避险 · 调谐阻尼器",
-    blurb: "在地震振动台上错开大厦共振频率，垫上叠层橡胶隔震垫，调准台北 101 黄金风阻尼球抵消强震！",
-    maxStars: 12
-  },
-  Play: QuakeGame
-};
+export const quake: GameModule = { meta, Play: QuakeGame };

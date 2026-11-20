@@ -6,6 +6,7 @@ import { chime } from "../../../kit/audio.ts";
 import { recordStars, sumStars, useGameStars } from "../../../kit/progress.ts";
 import { dad, say } from "../../../kit/speech.ts";
 import { atoms, imbalance, reactions, type Term } from "./logic.ts";
+import { meta } from "./meta.ts";
 
 const ACCENT = "#2fb380";
 const EL_META: Record<string, { name: string; color: string }> = {
@@ -227,15 +228,4 @@ export function BalanceGame({ exit, sound, setSound }: GameProps) {
   );
 }
 
-export const balance = {
-  meta: {
-    id: "balance",
-    category: "chemistry" as const,
-    title: "配平方程式",
-    emoji: "⚖️",
-    blurb: "看着左右两边的彩色原子珠子调系数，亲手验证「反应前后一颗原子都不少」！",
-    tag: "定量 · 质量守恒",
-    maxStars: reactions.length * 3
-  },
-  Play: BalanceGame
-};
+export const balance = { meta, Play: BalanceGame };

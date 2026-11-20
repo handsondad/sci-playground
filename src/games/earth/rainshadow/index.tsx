@@ -7,6 +7,7 @@ import { chime } from "../../../kit/audio.ts";
 import { recordStars, sumStars, useGameStars } from "../../../kit/progress.ts";
 import { dad, nian, say } from "../../../kit/speech.ts";
 import { checkRainGoal, computeFoehn, rainLevels } from "./logic.ts";
+import { meta } from "./meta.ts";
 
 const ACCENT = "#0ea5e9";
 
@@ -372,15 +373,4 @@ function RainshadowGame({ exit, sound, setSound }: GameProps) {
   );
 }
 
-export const rainshadow: GameModule = {
-  meta: {
-    id: "rainshadow",
-    title: "迎风坡与焚风",
-    category: "earth",
-    emoji: "🌧️",
-    tag: "地形雨 · 绝热升降温",
-    blurb: "调节海洋水汽露点与山脉海拔，看迎风坡凝结地形雨、背风坡下沉吹出干热焚风与雨影荒漠。",
-    maxStars: rainLevels.length * 3
-  },
-  Play: RainshadowGame
-};
+export const rainshadow: GameModule = { meta, Play: RainshadowGame };

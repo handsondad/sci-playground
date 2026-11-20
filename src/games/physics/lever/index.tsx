@@ -14,6 +14,7 @@ import {
   type LeverItem,
   type PlacedItem
 } from "./logic.ts";
+import { meta } from "./meta.ts";
 
 const ACCENT = "#ff9f43";
 const TICKS = [-4, -3, -2, -1, 1, 2, 3, 4] as const;
@@ -342,15 +343,4 @@ function LeverGame({ exit, sound, setSound }: GameProps) {
   );
 }
 
-export const lever: GameModule = {
-  meta: {
-    id: "lever",
-    title: "跷跷板平衡",
-    category: "mechanics",
-    emoji: "⚖️",
-    tag: "杠杆与力矩",
-    blurb: "在刻度木梁上挂小动物和砝码，用『重量×格数』让歪斜的跷跷板稳稳水平。",
-    maxStars: leverLevels.length * 3
-  },
-  Play: LeverGame
-};
+export const lever: GameModule = { meta, Play: LeverGame };

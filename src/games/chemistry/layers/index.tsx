@@ -6,6 +6,7 @@ import { chime } from "../../../kit/audio.ts";
 import { recordStars, sumStars, useGameStars } from "../../../kit/progress.ts";
 import { dad, say } from "../../../kit/speech.ts";
 import { fault, liquidBy, liquids, towers } from "./logic.ts";
+import { meta } from "./meta.ts";
 
 const ACCENT = "#2fb380";
 const LIQUID_EMOJI: Record<string, string> = {
@@ -192,15 +193,4 @@ export function LayersGame({ exit, sound, setSound }: GameProps) {
   );
 }
 
-export const layers = {
-  meta: {
-    id: "layers",
-    category: "chemistry" as const,
-    title: "杯中彩虹",
-    emoji: "🌈",
-    blurb: "把蜂蜜、洗洁精、水、植物油和酒精倒进同一只量筒，搭出互不掺混的五彩密度塔！",
-    tag: "物性 · 液体分层",
-    maxStars: towers.length * 3
-  },
-  Play: LayersGame
-};
+export const layers = { meta, Play: LayersGame };

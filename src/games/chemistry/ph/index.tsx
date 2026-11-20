@@ -6,6 +6,7 @@ import { chime } from "../../../kit/audio.ts";
 import { recordStars, sumStars, useGameStars } from "../../../kit/progress.ts";
 import { dad, say } from "../../../kit/speech.ts";
 import { cups, drops, indicator, pour, type DropId } from "./logic.ts";
+import { meta } from "./meta.ts";
 
 const ACCENT = "#2fb380";
 const DROP_META: Record<DropId, { icon: string; desc: string }> = {
@@ -220,15 +221,4 @@ export function PhGame({ exit, sound, setSound }: GameProps) {
   );
 }
 
-export const ph = {
-  meta: {
-    id: "ph",
-    category: "chemistry" as const,
-    title: "调酸碱",
-    emoji: "🧪",
-    blurb: "对照 0~14 彩虹比色卡，用有限滴数的强弱酸碱把烧瓶调出目标颜色！",
-    tag: "酸碱 · pH 指示剂",
-    maxStars: cups.length * 3
-  },
-  Play: PhGame
-};
+export const ph = { meta, Play: PhGame };

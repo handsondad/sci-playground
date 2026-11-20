@@ -44,3 +44,9 @@ export type GameModule = {
   meta: GameMeta;
   Play: ComponentType<GameProps>;
 };
+
+/** 注册表条目：meta 随首屏加载，实验台组件按需懒加载。 */
+export type GameEntry = {
+  meta: GameMeta;
+  load: () => Promise<ComponentType<GameProps>>;
+};

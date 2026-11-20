@@ -14,6 +14,7 @@ import {
   type MantleMotion,
   type PlateType
 } from "./logic.ts";
+import { meta } from "./meta.ts";
 
 const ACCENT = "#0ea5e9";
 
@@ -455,15 +456,4 @@ function PlatesGame({ exit, sound, setSound }: GameProps) {
   );
 }
 
-export const plates: GameModule = {
-  meta: {
-    id: "plates",
-    title: "板块构造局",
-    category: "earth",
-    emoji: "🌋",
-    tag: "大陆漂移 · 海沟与造山",
-    blurb: "调配大陆花岗岩与大洋玄武岩板块的碰撞、张裂与走滑，亲手隆起喜马拉雅与马里亚纳海沟。",
-    maxStars: plateLevels.length * 3
-  },
-  Play: PlatesGame
-};
+export const plates: GameModule = { meta, Play: PlatesGame };

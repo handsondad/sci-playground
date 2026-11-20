@@ -5,9 +5,9 @@ import { HintBox, StageStrip, WinCard } from "../../../kit/GameKit.tsx";
 import { chime } from "../../../kit/audio.ts";
 import { recordStars, sumStars, useGameStars } from "../../../kit/progress.ts";
 import { dad, say } from "../../../kit/speech.ts";
-import { canPlace, fewest, moveDisk, solved, startTowers, type Towers } from "./logic.ts";
+import { SIZES, canPlace, fewest, moveDisk, solved, startTowers, type Towers } from "./logic.ts";
+import { meta } from "./meta.ts";
 
-const SIZES = [3, 4, 5] as const;
 const DISK_COLORS = ["#ff6b6b", "#ff9f43", "#f0b429", "#3bb273", "#4d96ff"];
 const PEG_NAMES = ["起点 A 柱", "中转 B 柱", "终点 C 柱"];
 const ACCENT = "#7c6cf0";
@@ -204,15 +204,4 @@ export function HanoiGame({ exit, sound, setSound }: GameProps) {
   );
 }
 
-export const hanoi = {
-  meta: {
-    id: "hanoi",
-    category: "math" as const,
-    title: "汉诺塔",
-    emoji: "🗼",
-    blurb: "大盘不能压小盘！三层 7 步、四层 15 步，亲手体验「递归翻倍」的威力。",
-    tag: "算法 · 递归",
-    maxStars: SIZES.length * 3
-  },
-  Play: HanoiGame
-};
+export const hanoi = { meta, Play: HanoiGame };

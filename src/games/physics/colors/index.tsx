@@ -7,6 +7,7 @@ import { chime } from "../../../kit/audio.ts";
 import { recordStars, sumStars, useGameStars } from "../../../kit/progress.ts";
 import { dad, say } from "../../../kit/speech.ts";
 import { colorLevels, colorMatch, describeLight, isExactColor, rgbToCss, type RGB } from "./logic.ts";
+import { meta } from "./meta.ts";
 
 const ACCENT = "#ff9f43";
 
@@ -222,15 +223,4 @@ function ColorsGame({ exit, sound, setSound }: GameProps) {
   );
 }
 
-export const colors: GameModule = {
-  meta: {
-    id: "colors",
-    title: "三原色舞台灯",
-    category: "physics",
-    emoji: "🌈",
-    tag: "色光加色混合",
-    blurb: "推拉红绿蓝三盏聚光灯，亲眼见证红光加绿光变柠檬黄、三光合一变纯白。",
-    maxStars: colorLevels.length * 3
-  },
-  Play: ColorsGame
-};
+export const colors: GameModule = { meta, Play: ColorsGame };

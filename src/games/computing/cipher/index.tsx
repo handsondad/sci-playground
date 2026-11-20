@@ -13,6 +13,7 @@ import {
   topFrequencyLetter,
   transformWithWheel
 } from "./logic.ts";
+import { meta } from "./meta.ts";
 
 const ACCENT = "#14b8a6";
 const CX = 170;
@@ -362,15 +363,4 @@ function CipherGame({ exit, sound, setSound }: GameProps) {
   );
 }
 
-export const cipher: GameModule = {
-  meta: {
-    id: "cipher",
-    title: "凯撒密码盘",
-    category: "computing",
-    emoji: "🔐",
-    tag: "移位加密 · 频率破译",
-    blurb: "拨动双环凯撒密码盘加密军令、盲破乱码，并用字母频率柱状图一招擒获密钥。",
-    maxStars: 12
-  },
-  Play: CipherGame
-};
+export const cipher: GameModule = { meta, Play: CipherGame };

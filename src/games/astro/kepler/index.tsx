@@ -7,6 +7,7 @@ import { chime } from "../../../kit/audio.ts";
 import { recordStars, sumStars, useGameStars } from "../../../kit/progress.ts";
 import { dad, say } from "../../../kit/speech.ts";
 import { INNER_PLANETS, keplerLevels, matchesOrbit, periodDays, periodYears } from "./logic.ts";
+import { meta } from "./meta.ts";
 
 const ACCENT = "#3d5a99";
 const CX = 180;
@@ -234,15 +235,4 @@ function KeplerGame({ exit, sound, setSound }: GameProps) {
   );
 }
 
-export const kepler: GameModule = {
-  meta: {
-    id: "kepler",
-    title: "行星赛跑",
-    category: "astro",
-    emoji: "🪐",
-    tag: "开普勒第三定律",
-    blurb: "调节太阳帆探测器的轨道半径，跟水星、地球、火星同台赛跑，亲手验证 T² = a³。",
-    maxStars: keplerLevels.length * 3
-  },
-  Play: KeplerGame
-};
+export const kepler: GameModule = { meta, Play: KeplerGame };

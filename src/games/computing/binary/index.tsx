@@ -14,6 +14,7 @@ import {
   type BinaryLevel,
   type Bit
 } from "./logic.ts";
+import { meta } from "./meta.ts";
 
 const ACCENT = "#14b8a6";
 const FINGER_NAMES = ["小指", "无名指", "中指", "食指", "拇指"] as const;
@@ -437,15 +438,4 @@ function BinaryGame({ exit, sound, setSound }: GameProps) {
   );
 }
 
-export const binary: GameModule = {
-  meta: {
-    id: "binary",
-    title: "二进制灯牌",
-    category: "computing",
-    emoji: "💡",
-    tag: "0与1 · 位权编码",
-    blurb: "翻动 32·16·8·4·2·1 霓虹点阵灯卡，用 0 和 1 拨出十进制密码与像素笑脸。",
-    maxStars: 12
-  },
-  Play: BinaryGame
-};
+export const binary: GameModule = { meta, Play: BinaryGame };

@@ -6,6 +6,7 @@ import { chime } from "../../../kit/audio.ts";
 import { recordStars, sumStars, useGameStars } from "../../../kit/progress.ts";
 import { dad, say } from "../../../kit/speech.ts";
 import { boards, covers, edgeKey, oddNodes } from "./logic.ts";
+import { meta } from "./meta.ts";
 
 const ACCENT = "#7c6cf0";
 
@@ -303,15 +304,4 @@ export function EulerGame({ exit, sound, setSound }: GameProps) {
   );
 }
 
-export const euler = {
-  meta: {
-    id: "euler",
-    category: "math" as const,
-    title: "一笔画",
-    emoji: "✏️",
-    blurb: "笔不离纸、每条线只走一次！数清每个圆点有几条线，一眼看穿起点。",
-    tag: "图论 · 欧拉路径",
-    maxStars: boards.length * 3
-  },
-  Play: EulerGame
-};
+export const euler = { meta, Play: EulerGame };

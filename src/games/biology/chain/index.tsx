@@ -6,6 +6,7 @@ import { chime } from "../../../kit/audio.ts";
 import { recordStars, sumStars, useGameStars } from "../../../kit/progress.ts";
 import { dad, say } from "../../../kit/speech.ts";
 import { chains, ordered } from "./logic.ts";
+import { meta } from "./meta.ts";
 
 const ACCENT = "#5ec269";
 const ROLES = ["🌱 生产者", "🍽️ 初级消费者", "⚡ 次级消费者", "👑 顶级捕食者"];
@@ -196,15 +197,4 @@ export function ChainGame({ exit, sound, setSound }: GameProps) {
   );
 }
 
-export const chain = {
-  meta: {
-    id: "chain",
-    category: "biology" as const,
-    title: "谁吃谁",
-    emoji: "🦊",
-    blurb: "从太阳光和绿色植物出发，把草地、稻田和池塘里的生物排成能量传递链！",
-    tag: "生态 · 食物链与营养级",
-    maxStars: chains.length * 3
-  },
-  Play: ChainGame
-};
+export const chain = { meta, Play: ChainGame };

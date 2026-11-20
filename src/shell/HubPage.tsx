@@ -8,6 +8,7 @@ import type { Settings } from "../kit/Chrome.tsx";
 import { DuoStage, Meter, TalksSection, WikiSection } from "../kit/GameKit.tsx";
 import { sumStars, useStarBook, type StarBook } from "../kit/progress.ts";
 import { stopSpeaking } from "../kit/speech.ts";
+import { prefetchGame } from "./lazyGame.tsx";
 
 const QUICK_KEYWORDS = ["齿轮", "造桥", "彩虹", "恐龙", "密码", "日食"];
 
@@ -160,6 +161,8 @@ export function HubPage({ settings }: { settings: Settings }) {
                       className="mode-card"
                       style={{ "--bubble": hall?.color ?? "#ff9f43" } as CSSProperties}
                       onClick={() => openGame(game.meta.id)}
+                      onPointerEnter={() => { void prefetchGame(game).catch(() => {}); }}
+                      onFocus={() => { void prefetchGame(game).catch(() => {}); }}
                     >
                       <span className="mode-emoji" aria-hidden="true">{game.meta.emoji}</span>
                       <strong>

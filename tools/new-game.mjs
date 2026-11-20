@@ -121,6 +121,7 @@ import { recordStars, sumStars, useGameStars } from "../../../kit/progress.ts";
 import { Slider, fixed } from "../../../kit/Slider.tsx";
 import { dad, nian, say } from "../../../kit/speech.ts";
 import { STAGES, calcStageStars, checkStageGoal, simulateOutput } from "./logic.ts";
+import { meta } from "./meta.ts";
 
 function Workbench({ exit, sound, setSound }: GameProps) {
   const settings = { sound, setSound };
@@ -276,17 +277,22 @@ function Workbench({ exit, sound, setSound }: GameProps) {
   );
 }
 
-export const ${exportIdent}: GameModule = {
-  meta: {
-    id: "${id}",
-    title: "${title}",
-    emoji: "${emoji}",
-    category: "${category}",
-    tag: "TODO标签 · 核心概念",
-    blurb: "TODO(agent): 用一句话告诉小朋友这个实验玩什么、能发现什么奥秘。",
-    maxStars: STAGES.length * 3
-  },
-  Play: Workbench
+export const ${exportIdent}: GameModule = { meta, Play: Workbench };
+`;
+}
+
+/** 轻量元数据：首页/展厅/星数统计直接打包它，所以只能 import type，maxStars 写数字字面量。 */
+function renderMetaTemplate({ id, category, title, emoji }) {
+  return `import type { GameMeta } from "../../../catalog/types.ts";
+
+export const meta: GameMeta = {
+  id: "${id}",
+  title: "${title}",
+  emoji: "${emoji}",
+  category: "${category}",
+  tag: "TODO标签 · 核心概念",
+  blurb: "TODO(agent): 用一句话告诉小朋友这个实验玩什么、能发现什么奥秘。",
+  maxStars: 9 // = STAGES.length * 3；增删关卡后同步修改，并在 tests/stars.test.mjs 登记推导式
 };
 `;
 }
@@ -335,7 +341,10 @@ const indexCode = renderIndexTemplate({
   exportIdent
 });
 
-const importLine = `import { ${exportIdent} } from "../games/${category}/${id}/index.tsx";`;
+const metaFile = path.join(gameDir, "meta.ts");
+const metaCode = renderMetaTemplate({ id, category, title, emoji });
+const importLine = `import { meta as ${exportIdent} } from "../games/${category}/${id}/meta.ts";`;
+const entryLine = `{ meta: ${exportIdent}, load: () => import("../games/${category}/${id}/index.tsx").then((m) => m.${exportIdent}.Play) }`;
 
 if (!writeMode) {
   console.log(`🔍 [预览模式] 将在「${hall.emoji} ${hall.title}」下创建新实验：${emoji} ${title} (id: ${id})`);
@@ -343,19 +352,23 @@ if (!writeMode) {
   console.log(`   npm run game:new -- ${category} ${id} "${title}" "${emoji}" --write\n`);
   console.log(`📁 目标文件：`);
   console.log(`   • src/games/${category}/${id}/logic.ts`);
+  console.log(`   • src/games/${category}/${id}/meta.ts`);
   console.log(`   • src/games/${category}/${id}/index.tsx`);
   console.log(`   • src/catalog/games.ts  (+ ${importLine})\n`);
 } else {
   fs.mkdirSync(gameDir, { recursive: true });
   fs.writeFileSync(logicFile, logicCode, "utf8");
+  fs.writeFileSync(metaFile, metaCode, "utf8");
   fs.writeFileSync(indexFile, indexCode, "utf8");
 
   // 自动插入 import 与 games 数组项
   let nextCatalog = catalogText;
-  const lastImportIdx = nextCatalog.lastIndexOf("import ");
-  const lineEndIdx = nextCatalog.indexOf("\n", lastImportIdx);
-  nextCatalog = `${nextCatalog.slice(0, lineEndIdx + 1)}${importLine}\n${nextCatalog.slice(lineEndIdx + 1)}`;
-  nextCatalog = nextCatalog.replace(/\n\];/, `,\n  ${exportIdent}\n];`);
+  const eol = catalogText.includes("\r\n") ? "\r\n" : "\n";
+  const importMatches = [...nextCatalog.matchAll(/^import .*$/gm)];
+  const lastImport = importMatches[importMatches.length - 1];
+  const lineEndIdx = nextCatalog.indexOf("\n", lastImport.index);
+  nextCatalog = `${nextCatalog.slice(0, lineEndIdx + 1)}${importLine}${eol}${nextCatalog.slice(lineEndIdx + 1)}`;
+  nextCatalog = nextCatalog.replace(/\r?\n\];/, `,${eol}  ${entryLine}${eol}];`);
   fs.writeFileSync(catalogFile, nextCatalog, "utf8");
 
   console.log(`✅ 已创建并注册「${emoji} ${title}」(${category}/${id})！\n`);
@@ -370,7 +383,9 @@ console.log(`    assert.equal(${id.replace(/-/g, "_")}Logic.checkStageGoal(s, s.
 console.log(`    assert.equal(${id.replace(/-/g, "_")}Logic.checkStageGoal(s, (s.targetMin + s.targetMax) / 2), true);`);
 console.log(`  }`);
 console.log(`});`);
-console.log(`------------------------------------------------------------\n`);
+console.log(`------------------------------------------------------------`);
+console.log("⭐ 并在 tests/stars.test.mjs 的 derive 表里登记星星上限推导：");
+console.log(`  "${id}": ["${category}/${id}/logic.ts", (m) => m.STAGES.length * 3],\n`);
 console.log("🚀 完成后依次运行以下 4 条验收门禁：");
 console.log(`  1. npm run typecheck`);
 console.log(`  2. npm run check`);

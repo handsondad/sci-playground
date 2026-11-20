@@ -18,7 +18,7 @@
 | --- | --- |
 | `npm run dev` | 启动本地 Vite 开发服 |
 | `npm run game:new` | 查看 9 大展馆 ID 与新实验脚手架用法 |
-| `npm run game:new -- <hall> <id> "<中文标题>" "[emoji]" --write` | 生成 `logic.ts` + `index.tsx` 模板并自动注册到 `src/catalog/games.ts` |
+| `npm run game:new -- <hall> <id> "<中文标题>" "[emoji]" --write` | 生成 `logic.ts` + `meta.ts` + `index.tsx` 模板并自动注册到 `src/catalog/games.ts` |
 | `npm run typecheck` | `tsc --noEmit` 全量严格类型检查 |
 | `npm run check` | 运行仓库规则守卫（导入后缀、纯逻辑层、目录注册、`backLabel`、问答与百科完整性）并输出展馆统计 |
 | `npm run voice` | 增量采集全馆台词并用 `edge-tts` + `ffmpeg` 生成「小念（`zh-CN-YunxiaNeural`）& 爸爸（`zh-CN-YunxiNeural`）」标准语音 MP3 与清单 |
@@ -67,9 +67,9 @@ npm run smoke -- <新增或改动的gameId>   # 若改动公共壳层/样式则�
 ### 目录结构
 
 - `src/catalog/`：全站注册中心
-  - `types.ts`：`CategoryId`、`Category`、`GameMeta`、`GameProps`、`GameModule`
+  - `types.ts`：`CategoryId`、`Category`、`GameMeta`、`GameProps`、`GameModule`、`GameEntry`
   - `categories.ts`：9 大展馆定义（名称、emoji、导语、主题色）
-  - `games.ts`：全部实验模块注册表（首页、分馆、总星数统计的唯一数据源）
+  - `games.ts`：全部实验注册表（首页、分馆、总星数统计的唯一数据源）。每项为 `{ meta, load }`：`meta` 直接静态导入各游戏轻量的 `meta.ts`，`load` 用 `import()` 按需加载实验台代码块（进入游戏或悬停卡片时才下载）
   - `talks.ts`：大厅对话 `hubChats`、分馆对话 `categoryChats`、折叠问答 `scienceTalks`
   - `wiki.ts`：「科学百宝箱」大师故事与居家小实验 `scienceWiki`
 - `src/kit/`：统一复用的绘本互动组件库（**严禁在单个游戏里重写外壳**）
@@ -77,12 +77,12 @@ npm run smoke -- <新增或改动的gameId>   # 若改动公共壳层/样式则�
   - `GameKit.tsx`：`StageStrip`、`Meter`、`HintBox`、`WinCard`、`DuoStage`、`TalksSection`、`WikiSection`
   - `Slider.tsx`：带 `− / +` 逐格微调按钮的无障碍 `Slider` 及 `fixed` / `degrees` 格式化器
   - `progress.ts`：`recordStars`、`useGameStars`、`useStarBook`、`sumStars`（`localStorage` 持久化）
-  - `speech.ts`：`say`、`stopSpeaking`、`nian`、`dad`、`hasClip`（优先播放 `public/voice/` 预生成的小念 `YunxiaNeural` & 爸爸 `YunxiNeural` MP3，动态数字句自动回退 Web Speech）
+  - `speech.ts`：`say`、`stopSpeaking`、`nian`、`dad`、`hasClip`（优先播放 `public/voice/` 预生成的小念 `YunxiaNeural` & 爸爸 `YunxiNeural` MP3，动态数字句自动回退 Web Speech；前端只打包 `src/catalog/voice-clips.ts` 的短哈希集合，由 `voice-key.ts` 在浏览器内算 SHA-1 定位音频，播放当前句时预加载下一句）
   - `audio.ts`：`chime(true | false)` WebAudio 轻音效
-- `src/games/<folder>/<id>/`：每个实验独立目录，标准双文件结构 `logic.ts`（纯算法/物理公式）+ `index.tsx`（React + SVG 实验台）
+- `src/games/<folder>/<id>/`：每个实验独立目录，标准三文件结构 `logic.ts`（纯算法/物理公式）+ `meta.ts`（卡片元数据，只许 `import type`，`maxStars` 写数字字面量）+ `index.tsx`（React + SVG 实验台，`import { meta } from "./meta.ts"`）
 - `src/index.css`：设计令牌与全局响应式布局（`.workbench` 桌面双栏、窄屏自动单栏）
 - `tools/`：AI 与开发者共用的脚手架（`new-game.mjs`）、规则守卫（`check-rules.mjs`）和无头浏览器巡检（`smoke.mjs`）
-- `tests/`：Node 24 原生单元测试（`collection.test.mjs`、`slide.test.mjs`）
+- `tests/`：Node 24 原生单元测试（`collection.test.mjs`、`slide.test.mjs`、`voice.test.mjs`，以及校验每个 `meta.ts` 星星上限与关卡数一致的 `stars.test.mjs`）
 
 ---
 
@@ -90,7 +90,7 @@ npm run smoke -- <新增或改动的gameId>   # 若改动公共壳层/样式则�
 
 ### A. 新增一款互动科学实验
 
-1. **脚手架起手**：运行 `npm run game:new -- <hall> <id> "<中文标题>" "<emoji>" --write`，自动生成 `src/games/<hall>/<id>/{logic.ts,index.tsx}` 并挂载到 `src/catalog/games.ts`。
+1. **脚手架起手**：运行 `npm run game:new -- <hall> <id> "<中文标题>" "<emoji>" --write`，自动生成 `src/games/<hall>/<id>/{logic.ts,meta.ts,index.tsx}` 并挂载到 `src/catalog/games.ts`。
 2. **编写纯科学模型（`logic.ts`）**：
    - 设计 **3～4 个递进关卡**（第 1 关直观感知 → 第 2 关定量/反向规律 → 第 3/4 关组合或极限挑战）。
    - 用真实物理/数学/化学/工程规律计算状态，**严禁硬编码假数据**。
@@ -100,6 +100,7 @@ npm run smoke -- <新增或改动的gameId>   # 若改动公共壳层/样式则�
    - 看过提示（`HintBox`）当关最高封顶 **2 星**；未看提示一次调准拿 **3 星**，通过 `recordStars(id, stageId, stars)` 记星（只升不降）。
 4. **补齐单测与联动内容**：
    - 在 `tests/collection.test.mjs` 中导入该游戏的 `logic.ts`，断言核心公式单调性/守恒律，以及每关初始状态未提前过关且目标可达成（`npm run check` 会强制检查单测覆盖）。
+   - 在 `tests/stars.test.mjs` 的 `derive` 表登记 `meta.ts` 里 `maxStars` 的推导（通常是 `(m) => m.STAGES.length * 3`），增删关卡时测试会提醒同步改字面量。
    - 如适合，可在 `src/catalog/wiki.ts` 补一张 `relatedGameId: "<id>"` 的大师故事卡，或在 `src/catalog/talks.ts` 补一条问答。
 5. **跑通四步门禁**：`npm run typecheck && npm run check && npm test && npm run smoke -- <id>`。
 
@@ -109,7 +110,7 @@ npm run smoke -- <新增或改动的gameId>   # 若改动公共壳层/样式则�
 2. 在 `src/catalog/categories.ts` 增加展馆元数据（`id`、`title`、`emoji`、`blurb`、`color`）。
 3. 在 `src/catalog/talks.ts` 补齐 `categoryChats[<newId>]`（至少 2 组开场对话）及至少 **3 条** 归属该馆的 `scienceTalks`。
 4. 在 `src/catalog/wiki.ts` 补齐至少 **3 张** 归属该馆的 `scienceWiki` 卡片（`homeLab` 以 `🏠 居家小实验：` 开头，`relatedGameId` 指向真实游戏）。
-5. 为该馆创建并注册至少 **4～5 款** 互动实验，检查 `vite.config.ts` 的 `manualChunks` 是否需要纳入新目录以保持单包 `< 500 kB`。
+5. 为该馆创建并注册至少 **4～5 款** 互动实验，每款实验会自动拆成独立的懒加载代码块，无需改 `vite.config.ts`（`manualChunks` 只单独拆出 `vendor`）。
 6. 运行 `npm run check && npm test && npm run build && npm run smoke`。
 
 ---

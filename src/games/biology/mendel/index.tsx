@@ -13,6 +13,7 @@ import {
   punnettSquare,
   type Genotype
 } from "./logic.ts";
+import { meta } from "./meta.ts";
 
 const ACCENT = "#3bb273";
 const ALL_GENOS: readonly Genotype[] = ["AA", "Aa", "aa"];
@@ -324,15 +325,4 @@ function MendelGame({ exit, sound, setSound }: GameProps) {
   );
 }
 
-export const mendel: GameModule = {
-  meta: {
-    id: "mendel",
-    title: "孟德尔种豌豆",
-    category: "biology",
-    emoji: "🫛",
-    tag: "显隐性遗传棋盘",
-    blurb: "搭配亲本豌豆的显性与隐性基因，在 2×2 庞氏棋盘格里亲手种出 3:1 与 1:1 的遗传奇迹。",
-    maxStars: mendelLevels.length * 3
-  },
-  Play: MendelGame
-};
+export const mendel: GameModule = { meta, Play: MendelGame };

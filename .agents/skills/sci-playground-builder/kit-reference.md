@@ -6,26 +6,40 @@
 
 ## 1. 游戏模块导出契约 (`src/catalog/types.ts`)
 
+```ts
+// meta.ts —— 首页 / 展厅 / 总星数直接打包它，所以只许 import type，不能导入 logic.ts
+import type { GameMeta } from "../../../catalog/types.ts";
+
+export const meta: GameMeta = {
+  id: "doppler",               // URL 路由键 (#/g/doppler) 与存档键，一旦发布不可改名
+  category: "physics",         // 必须是 CategoryId 之一
+  title: "多普勒救护车",        // 卡片与顶栏主标题
+  emoji: "🚑",
+  tag: "声波 · 频率偏移",       // 卡片右上角学科微标签（建议 6～10 字）
+  blurb: "迎面开来声音变尖、远去变低沉！拖动车速听懂波前挤压。", // 卡片简介（1 句话）
+  maxStars: 12                 // 数字字面量 = 关卡数 × 3；tests/stars.test.mjs 会核对
+};
+```
+
 ```tsx
+// index.tsx —— 实验台本体，进入游戏时才按需下载
 import type { GameModule, GameProps } from "../../../catalog/types.ts";
+import { meta } from "./meta.ts";
 
 function MyWorkbench({ exit, sound, setSound }: GameProps) {
   const settings = { sound, setSound };
   // ...
 }
 
-export const myGame: GameModule = {
-  meta: {
-    id: "doppler",               // URL 路由键 (#/g/doppler) 与存档键，一旦发布不可改名
-    category: "physics",         // 必须是 CategoryId 之一
-    title: "多普勒救护车",        // 卡片与顶栏主标题
-    emoji: "🚑",
-    tag: "声波 · 频率偏移",       // 卡片右上角学科微标签（建议 6～10 字）
-    blurb: "迎面开来声音变尖、远去变低沉！拖动车速听懂波前挤压。", // 卡片简介（1 句话）
-    maxStars: STAGES.length * 3  // 总星数 = 关卡数 × 3
-  },
-  Play: MyWorkbench
-};
+export const myGame: GameModule = { meta, Play: MyWorkbench };
+```
+
+注册到 `src/catalog/games.ts`（脚手架 `--write` 会自动完成）：
+
+```ts
+import { meta as myGame } from "../games/physics/doppler/meta.ts";
+// games 数组里：
+{ meta: myGame, load: () => import("../games/physics/doppler/index.tsx").then((m) => m.myGame.Play) }
 ```
 
 ---

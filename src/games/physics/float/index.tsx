@@ -7,6 +7,7 @@ import { chime } from "../../../kit/audio.ts";
 import { recordStars, sumStars, useGameStars } from "../../../kit/progress.ts";
 import { dad, say } from "../../../kit/speech.ts";
 import { brine, floatLevels, pose } from "./logic.ts";
+import { meta } from "./meta.ts";
 
 const POSE_LABEL = { sink: "⬇️ 沉在杯底", hover: "⚖️ 悬浮在半空", float: "⬆️ 漂浮在水面" } as const;
 const ACCENT = "#ff7a45";
@@ -211,15 +212,4 @@ export function FloatGame({ exit, sound, setSound }: GameProps) {
   );
 }
 
-export const floatEgg = {
-  meta: {
-    id: "float",
-    category: "physics" as const,
-    title: "浮起来的鸡蛋",
-    emoji: "🥚",
-    blurb: "清水里鸡蛋沉底，一勺勺加盐提高水密度，让鸡蛋悬浮在半空或漂上水面！",
-    tag: "流体 · 浮力与密度",
-    maxStars: floatLevels.length * 3
-  },
-  Play: FloatGame
-};
+export const floatEgg = { meta, Play: FloatGame };

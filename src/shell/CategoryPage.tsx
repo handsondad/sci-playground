@@ -1,15 +1,16 @@
 import { useEffect, type CSSProperties } from "react";
 import { categoryChats, scienceTalks } from "../catalog/talks.ts";
 import { scienceWiki } from "../catalog/wiki.ts";
-import type { Category, GameModule } from "../catalog/types.ts";
+import type { Category, GameEntry } from "../catalog/types.ts";
 import { Chat, TopBar, type Settings } from "../kit/Chrome.tsx";
 import { TalksSection, WikiSection } from "../kit/GameKit.tsx";
 import { sumStars, useStarBook } from "../kit/progress.ts";
 import { pairLines, say } from "../kit/speech.ts";
+import { prefetchGame } from "./lazyGame.tsx";
 
 export function CategoryPage({ category, games, settings }: {
   category: Category;
-  games: readonly GameModule[];
+  games: readonly GameEntry[];
   settings: Settings;
 }) {
   const book = useStarBook();
@@ -71,6 +72,8 @@ export function CategoryPage({ category, games, settings }: {
               className="mode-card"
               style={{ "--bubble": category.color } as CSSProperties}
               onClick={() => { window.location.hash = `#/g/${game.meta.id}`; }}
+              onPointerEnter={() => { void prefetchGame(game).catch(() => {}); }}
+              onFocus={() => { void prefetchGame(game).catch(() => {}); }}
             >
               <span className="mode-emoji" aria-hidden="true">{game.meta.emoji}</span>
               <strong>

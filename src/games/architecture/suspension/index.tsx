@@ -12,6 +12,7 @@ import {
   suspensionLevels,
   type SuspensionState
 } from "./logic.ts";
+import { meta } from "./meta.ts";
 
 const ACCENT = "#b45309";
 
@@ -273,15 +274,4 @@ function SuspensionGame({ exit, sound, setSound }: GameProps) {
   );
 }
 
-export const suspension: GameModule = {
-  meta: {
-    id: "suspension",
-    title: "悬索大桥主缆",
-    emoji: "🌉",
-    category: "architecture",
-    tag: "抛物线垂度 · 黄金垂跨比",
-    blurb: "调配跨海巨塔高度与主缆抛物线垂度，发现『拉得太直反而绷断钢缆』的力学秘密，算出世界名桥黄金比例！",
-    maxStars: suspensionLevels.length * 3
-  },
-  Play: SuspensionGame
-};
+export const suspension: GameModule = { meta, Play: SuspensionGame };

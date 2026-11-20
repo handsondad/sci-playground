@@ -13,6 +13,7 @@ import {
   ropePulledMeters,
   type PullDirection
 } from "./logic.ts";
+import { meta } from "./meta.ts";
 
 const ACCENT = "#ea580c";
 
@@ -374,15 +375,4 @@ function PulleysGame({ exit, sound, setSound }: GameProps) {
   );
 }
 
-export const pulleys: GameModule = {
-  meta: {
-    id: "pulleys",
-    title: "滑轮起重机",
-    category: "mechanics",
-    emoji: "🏗️",
-    tag: "定滑轮 · 动滑轮组",
-    blurb: "从升旗杆顶改变方向的定滑轮，到四股绳吊起三角钢琴的复合滑轮组，亲手验证省力必费距离。",
-    maxStars: pulleyLevels.length * 3
-  },
-  Play: PulleysGame
-};
+export const pulleys: GameModule = { meta, Play: PulleysGame };

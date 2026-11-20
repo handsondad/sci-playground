@@ -6,6 +6,7 @@ import { chime } from "../../../kit/audio.ts";
 import { recordStars, sumStars, useGameStars } from "../../../kit/progress.ts";
 import { dad, say } from "../../../kit/speech.ts";
 import { allPrimesFound, isPrime, primeLevels, remainingNumbers, sieveMarks, twinPrimesUpTo } from "./logic.ts";
+import { meta } from "./meta.ts";
 
 const ACCENT = "#4d96ff";
 
@@ -281,15 +282,4 @@ function PrimesGame({ exit, sound, setSound }: GameProps) {
   );
 }
 
-export const primes: GameModule = {
-  meta: {
-    id: "primes",
-    title: "筛质数寻宝",
-    category: "math",
-    emoji: "🔢",
-    tag: "埃氏筛法",
-    blurb: "派出 2、3、5、7 倍数扫把划掉合数，看平方根边界如何一网打尽百内质数。",
-    maxStars: primeLevels.length * 3
-  },
-  Play: PrimesGame
-};
+export const primes: GameModule = { meta, Play: PrimesGame };

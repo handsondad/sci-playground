@@ -22,6 +22,7 @@ import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { categories } from "../src/catalog/categories.ts";
+import { games } from "../src/catalog/games.ts";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const DIST_DIR = path.join(ROOT, "dist");
@@ -71,17 +72,7 @@ function findBrowser() {
 }
 
 function listAllGameIds() {
-  const catalogText = fs.readFileSync(path.join(ROOT, "src", "catalog", "games.ts"), "utf8");
-  const ids = [];
-  for (const m of catalogText.matchAll(/from\s+["'](\.[^"']+)["']/g)) {
-    const entry = path.resolve(path.join(ROOT, "src", "catalog"), m[1]);
-    if (!entry.includes(`${path.sep}games${path.sep}`)) continue;
-    const text = fs.readFileSync(entry, "utf8");
-    const metaBlock = text.match(/meta\s*:\s*\{([\s\S]*?)\n\s*\}/)?.[1] ?? "";
-    const id = metaBlock.match(/\bid\s*:\s*["']([^"']+)["']/)?.[1];
-    if (id) ids.push(id);
-  }
-  return ids;
+  return games.map((g) => g.meta.id);
 }
 
 function startStaticServer() {
@@ -324,6 +315,22 @@ async function main() {
           sessionId
         );
         await new Promise((r) => setTimeout(r, 120));
+        // 实验台是懒加载代码块：等占位消失、<h1> 出现后再巡检（最多约 6 秒）
+        for (let attempt = 0; attempt < 75; attempt++) {
+          const readyRes = await cdp.send(
+            "Runtime.evaluate",
+            {
+              expression: `!document.querySelector("[data-loading]") && Boolean(document.querySelector("h1")?.textContent?.trim())`,
+              returnByValue: true
+            },
+            sessionId
+          );
+          if (readyRes.result?.value) {
+            if (attempt > 0) await new Promise((r) => setTimeout(r, 120));
+            break;
+          }
+          await new Promise((r) => setTimeout(r, 80));
+        }
 
         const runtimeErrors = cdp.events
           .filter((e) => e.sessionId === sessionId)

@@ -7,6 +7,7 @@ import { chime } from "../../../kit/audio.ts";
 import { recordStars, sumStars, useGameStars } from "../../../kit/progress.ts";
 import { dad, say } from "../../../kit/speech.ts";
 import { checkMatterGoal, matterLevels, phaseLabel, phaseOf, SUBSTANCES } from "./logic.ts";
+import { meta } from "./meta.ts";
 
 const ACCENT = "#a66cff";
 
@@ -269,15 +270,4 @@ function MatterGame({ exit, sound, setSound }: GameProps) {
   );
 }
 
-export const matter: GameModule = {
-  meta: {
-    id: "matter",
-    title: "三态微观镜",
-    category: "chemistry",
-    emoji: "🧊",
-    tag: "物态变化与分子",
-    blurb: "放大一亿倍看冰晶振动、液水滑移与蒸汽飞奔，还能在手心融化金属镓、把氮气冻成液氮。",
-    maxStars: matterLevels.length * 3
-  },
-  Play: MatterGame
-};
+export const matter: GameModule = { meta, Play: MatterGame };

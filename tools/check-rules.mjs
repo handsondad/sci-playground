@@ -12,6 +12,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { categories } from "../src/catalog/categories.ts";
+import { games } from "../src/catalog/games.ts";
 import { categoryChats, hubChats, scienceTalks } from "../src/catalog/talks.ts";
 import { scienceWiki } from "../src/catalog/wiki.ts";
 
@@ -35,54 +36,6 @@ function walkFiles(dir, predicate = () => true) {
 
 function rel(filePath) {
   return path.relative(ROOT, filePath).replace(/\\/g, "/");
-}
-
-/** 解析单个游戏入口文件里的 meta 对象（兼容 SlideGame.tsx 与标准 index.tsx）。 */
-function extractGameMeta(entryFile) {
-  const text = fs.readFileSync(entryFile, "utf8");
-  const metaBlock = text.match(/meta\s*:\s*\{([\s\S]*?)\n\s*\}/);
-  if (!metaBlock) return null;
-  const block = metaBlock[1];
-  const pickStr = (key) => block.match(new RegExp(`\\b${key}\\s*:\\s*["'\`]([^"'\`]+)["'\`]`))?.[1] ?? "";
-  const maxStarsRaw = block.match(/\bmaxStars\s*:\s*([^\n,}]+)/)?.[1]?.trim() ?? "";
-
-  let maxStars = Number(maxStarsRaw);
-  if (!Number.isFinite(maxStars)) {
-    // 支持 STAGES.length * 3 或 LEVELS.length * 3 这类常量表达式
-    const multMatch = maxStarsRaw.match(/^([A-Za-z0-9_]+)\.length\s*\*\s*(\d+)$/);
-    if (multMatch) {
-      const logicPath = path.join(path.dirname(entryFile), "logic.ts");
-      const source = fs.existsSync(logicPath) ? `${fs.readFileSync(logicPath, "utf8")}\n${text}` : text;
-      const arrName = multMatch[1];
-      const factor = Number(multMatch[2]);
-      const arrDecl = source.match(new RegExp(`(?:const|export const)\\s+${arrName}[^=]*=\\s*\\[([\\s\\S]*?)\\n\\];`));
-      if (arrDecl) {
-        let depth = 0;
-        let count = 0;
-        for (const ch of arrDecl[1]) {
-          if (ch === "{") {
-            if (depth === 0) count++;
-            depth++;
-          } else if (ch === "}") {
-            depth = Math.max(0, depth - 1);
-          }
-        }
-        if (count > 0) maxStars = count * factor;
-      }
-    } else if (entryFile.replace(/\\/g, "/").endsWith("slide/index.ts")) {
-      maxStars = 21; // 6 关 × 3 星 + 问答 3 星
-    }
-  }
-
-  return {
-    id: pickStr("id"),
-    title: pickStr("title"),
-    emoji: pickStr("emoji"),
-    category: pickStr("category"),
-    tag: pickStr("tag"),
-    blurb: pickStr("blurb"),
-    maxStars: Number.isFinite(maxStars) ? maxStars : 12
-  };
 }
 
 export function checkAllRules() {
@@ -152,30 +105,56 @@ export function checkAllRules() {
   }
 
   // 4. 解析 src/catalog/games.ts 注册表并核对磁盘上的所有游戏目录
+  //    注册表只静态引入轻量 meta.ts，组件经 load: () => import(".../index.tsx") 懒加载
   const gamesCatalogPath = path.join(SRC_DIR, "catalog", "games.ts");
   const gamesCatalogText = fs.readFileSync(gamesCatalogPath, "utf8");
-  const importedEntries = new Map(); // varName -> entryFile
-  for (const m of gamesCatalogText.matchAll(/import\s+\{\s*([A-Za-z0-9_]+)\s*\}\s+from\s+["'](\.[^"']+)["']/g)) {
-    importedEntries.set(m[1], path.resolve(path.dirname(gamesCatalogPath), m[2]));
+  const resolveCatalog = (spec) => path.resolve(path.dirname(gamesCatalogPath), spec);
+  const metaImports = new Map(); // varName -> meta.ts
+  for (const m of gamesCatalogText.matchAll(/import\s+\{\s*meta\s+as\s+([A-Za-z0-9_]+)\s*\}\s+from\s+["'](\.[^"']+)["']/g)) {
+    metaImports.set(m[1], resolveCatalog(m[2]));
   }
   const arrayBody =
-    gamesCatalogText.match(/export const games\s*:\s*(?:readonly\s+)?GameModule\[\]\s*=\s*\[([\s\S]*?)\];/)?.[1] ?? "";
-  const listedVars = (arrayBody.match(/\b[A-Za-z_][A-Za-z0-9_]*\b/g) ?? []).filter((v) => importedEntries.has(v));
+    gamesCatalogText.match(/export const games\s*:\s*(?:readonly\s+)?GameEntry\[\]\s*=\s*\[([\s\S]*?)\n\];/)?.[1] ?? "";
+  const listed = [
+    ...arrayBody.matchAll(
+      /\{\s*meta:\s*([A-Za-z0-9_]+),\s*load:\s*\(\)\s*=>\s*import\(\s*["'](\.[^"']+)["']\s*\)\.then\(\(m\)\s*=>\s*m\.([A-Za-z0-9_]+)\.Play\)\s*\}/g
+    )
+  ].map((m) => ({ varName: m[1], entryFile: resolveCatalog(m[2]), exportName: m[3] }));
+  if (listed.length !== games.length) {
+    errors.push(`[注册格式] games.ts 里有 ${games.length} 个条目，但只解析出 ${listed.length} 个标准写法 { meta: x, load: () => import("…/index.tsx").then((m) => m.x.Play) }`);
+  }
 
   const registeredDirs = new Set();
   const gameIds = new Set();
   const gamesByHall = new Map(categories.map((c) => [c.id, []]));
   let totalStars = 0;
 
-  for (const varName of listedVars) {
-    const entryFile = importedEntries.get(varName);
+  for (const [i, { varName, entryFile, exportName }] of listed.entries()) {
+    const metaFile = metaImports.get(varName);
     const gameDir = path.dirname(entryFile);
     const dirKey = rel(gameDir).replace(/^src\/games\//, "");
     registeredDirs.add(dirKey);
 
-    const meta = extractGameMeta(entryFile);
-    if (!meta || !meta.id) {
-      errors.push(`[游戏元数据] ${rel(entryFile)} 缺少可解析的 meta.id`);
+    if (!metaFile || path.dirname(metaFile) !== gameDir || path.basename(metaFile) !== "meta.ts") {
+      errors.push(`[注册格式] games.ts 中 ${varName} 的 meta 必须来自同目录的 ${rel(path.join(gameDir, "meta.ts"))}`);
+      continue;
+    }
+    if (!fs.existsSync(entryFile)) continue; // 已由导入缺失规则报告
+    const metaText = fs.readFileSync(metaFile, "utf8");
+    if (/^\s*import\s+(?!type\b)/m.test(metaText)) {
+      errors.push(`[轻量元数据] ${rel(metaFile)} 只能 import type；maxStars 请写成数字字面量，别把 logic.ts 拖进首屏包`);
+    }
+    const entryText = fs.readFileSync(entryFile, "utf8");
+    if (!new RegExp(`export const ${exportName}\\b`).test(entryText)) {
+      errors.push(`[注册格式] ${rel(entryFile)} 没有导出 games.ts 懒加载用到的 ${exportName}`);
+    }
+    if (!/import\s+\{\s*meta\s*\}\s+from\s+["']\.\/meta\.ts["']/.test(entryText)) {
+      errors.push(`[注册格式] ${rel(entryFile)} 应 import { meta } from "./meta.ts"，保证元数据只有一份`);
+    }
+
+    const meta = games[i]?.meta;
+    if (!meta || !meta.id || !metaText.includes(`id: "${meta.id}"`)) {
+      errors.push(`[游戏元数据] ${rel(metaFile)} 缺少可解析的 meta.id，或与 games.ts 条目顺序不一致`);
       continue;
     }
     if (gameIds.has(meta.id)) {
@@ -307,7 +286,7 @@ export function checkAllRules() {
     errors,
     stats: {
       halls: categories.length,
-      games: listedVars.length,
+      games: listed.length,
       totalStars,
       talks: scienceTalks.length,
       wiki: scienceWiki.length,

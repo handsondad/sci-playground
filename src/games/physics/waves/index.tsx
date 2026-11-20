@@ -7,6 +7,7 @@ import { chime } from "../../../kit/audio.ts";
 import { recordStars, sumStars, useGameStars } from "../../../kit/progress.ts";
 import { dad, say } from "../../../kit/speech.ts";
 import { matchScore, sampleWave, waveLevels, type Harmonic } from "./logic.ts";
+import { meta } from "./meta.ts";
 
 const ACCENT = "#ff7a45";
 
@@ -216,15 +217,4 @@ export function WavesGame({ exit, sound, setSound }: GameProps) {
   );
 }
 
-export const waves = {
-  meta: {
-    id: "waves",
-    category: "physics" as const,
-    title: "拼波实验室",
-    emoji: "🌊",
-    blurb: "拖动高矮和相位把几列正弦波叠在一起，既能拼出方波，还能亲耳听见泛音音色！",
-    tag: "声学 · 傅里叶合成",
-    maxStars: waveLevels.length * 3
-  },
-  Play: WavesGame
-};
+export const waves = { meta, Play: WavesGame };

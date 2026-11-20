@@ -7,6 +7,7 @@ import { chime } from "../../../kit/audio.ts";
 import { recordStars, sumStars, useGameStars } from "../../../kit/progress.ts";
 import { dad, say } from "../../../kit/speech.ts";
 import { angleDiff, atMark, northSeason, orbits, southSeason, wrap } from "./logic.ts";
+import { meta } from "./meta.ts";
 
 const ACCENT = "#3f8efc";
 const TILT_RAD = (23.5 * Math.PI) / 180;
@@ -226,15 +227,4 @@ export function SeasonsGame({ exit, sound, setSound }: GameProps) {
   );
 }
 
-export const seasons = {
-  meta: {
-    id: "seasons",
-    category: "astro" as const,
-    title: "谁在过夏天",
-    emoji: "🌍",
-    blurb: "地轴歪着 23.5° 绕太阳转！看南北半球怎样轮流朝向阳光，过着相反的冬与夏。",
-    tag: "行星 · 地轴与四季",
-    maxStars: orbits.length * 3
-  },
-  Play: SeasonsGame
-};
+export const seasons = { meta, Play: SeasonsGame };
